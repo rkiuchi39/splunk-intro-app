@@ -22,7 +22,7 @@ jobs:
     - name: Python version
       run: python --version
     - name: Install dependencies
-      run: pip install -r splunk-packaging-toolkit
+      run: pip install splunk-packaging-toolkit
     - name: Build package
       run: slim package splunk_intro
 
@@ -40,6 +40,12 @@ jobs:
     - name: Python version
       run: python --version
     - name: Install dependencies
-      run: pip install -r splunk-packaging-toolkit
+      run: pip install splunk-packaging-toolkit
     - name: Build package
       run: slim package splunk_intro
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v1
+      with:
+        files: splunk_intro-1.0.0.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
