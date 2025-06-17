@@ -1,0 +1,51 @@
+<form version="1.1" theme="dark">
+  <label>入力フィールド: テキスト</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="text" token="COUNTRY">
+      <label>国名(英語)</label>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+テキスト入力フィールドには任意の文字を入力できます。手入力が容易なキーワードでログを確認するような使い方に向いています。<br/>
+入力フィールドで設定された値はトークンに格納されます。サーチなど他の箇所で設定値を参照するにはトークンを $$ で囲んで記述します。<br/>
+テキスト入力フィールドに Australia、China、"United States"と入力してみましょう。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>$COUNTRY$ からの購入件数</title>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase
+| iplocation clientip
+| search Country=$COUNTRY$
+| timechart span=1d count 
+</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisLabelsY.majorUnit">5</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

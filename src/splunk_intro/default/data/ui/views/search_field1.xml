@@ -1,0 +1,125 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) フィールドサーチ</label>
+  <row>
+    <panel>
+      <title></title>
+      <html><br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>フィールドとは</b>   
+            </font>
+          </font>  <br/>
+フィールドは Splunk がイベントデータから検索できる名前と値のペアです。
+これまで index や sourcetype のようなメタデータのフィールドを使用したサーチを実行しましたが、それ以外にも、フィールド抽出や rex コマンドを用いて、検索実行時、または Index 時に、イベントデータから特定の箇所をフィールドとして定義、抽出を作成するように設定することができます。本コンテンツではフィールド抽出定義がすでに完了したデータを使用しており、詳細は割愛します。<br/>
+
+以下のサーチ文では、action というフィールドの値が purchase であるイベントを検索しています。
+
+<p/>
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie  <font color="yellow">action=purchase</font>
+              </td>
+</tr>
+</table>    <br/>
+  
+メッセージサーチと異なり、フィールドサーチでのフィールド名は 大文字小文字を識別するので注意してください。<p/>
+(action -&gt; Action とすると検索結果が出てこなくなります)。
+  
+  
+   </font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+     <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ実行結果</b>
+            </font>
+          </font>  <br/>
+右のパネルのクチバシを開くと、フィールド欄にaction というフィールドが追加されているのが分かります。<br/>
+ダッシュボードに埋め込まれたサーチでは、action のようにサーチ文でフィールドを明示指定しないかぎり、フィールド抽出はされません。<br/>
+access_combined_wcookie のイベントログで、どのようなフィールド抽出定義が入っているのかを確認するためには、<br/>
+　1. パネル右下の虫眼鏡アイコンからサーチウィンドウを開く。<br/>
+　2. サーチモードを「スマートモード」に変更して、サーチを再実行する。<br/>
+　3. フィールドリストやイベントのフィールド欄からフィールド一覧を確認。<br/>
+
+⾼速モードはサーチに必要なフィールドの抽出を抑⽌することで検索速度を向上させるモードなので、ダッシュボードのようにすでにサーチ文で使用するフィールドが確定している場合に有効です。<br/>
+どのようなデータやフィールドがあるのかを確認しながらサーチを作成していくような場合では、スマートモードでサーチを実行すると分かりやすいです。
+
+
+</font>
+      </html>
+    </panel>
+    <panel>
+      <title>フィールドサーチの実行結果 (イベント表記)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>フィールドの一覧</b>   
+            </font>
+          </font>  <br/>
+下パネルの出力は fieldsummay コマンドを用いて、access_combined_wcookie の検索結果からフィールド情報とステータス出力させたものです。<br/>
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td> | fieldsummary maxvals=5</td>
+</tr>
+</table>
+          <br/>
+
+     
+
+   </font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>access_combined_wcookie に含まれるフィールドの一覧</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| fieldsummary maxvals=5
+| rename field as "フィールド名"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

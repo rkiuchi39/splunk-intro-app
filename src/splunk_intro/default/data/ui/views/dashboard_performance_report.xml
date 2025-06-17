@@ -1,0 +1,99 @@
+<form version="1.1" theme="dark">
+  <label>パフォーマンス: スケジュールレポート</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY" searchWhenChanged="true">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+      <default>China</default>
+    </input>
+    <input type="multiselect" token="ACTION" searchWhenChanged="true">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+      <default>purchase</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+スケジュールされたレポートをダッシュボードのパネルとして表示することで以下の 2 つの大きなメリットが生じます。<br/>
+<ul>
+  <li>既に実行された結果を表示するだけなので極めて高速</li>
+  <li>新たにサーチを実行するわけではないので、パネルを開いてもサーチリソースを消費しない</li>
+</ul>
+そのため、多くの人が利用するパネル数の多いダッシュボードではスケジュールレポートをパネルとして利用することが推奨されます。<br/>
+ただし、レポート内のサーチには入力フィールドなどから検索条件を指定することができないため、インタラクティブ性には欠けたダッシュボードになります。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+実行ボタンが付いているダッシュボードでは実行ボタンを押すまでサーチを実行しません。マルチセレクトや入力フィールドが複数ある場合など、条件を設定する度に無駄なサーチを実行させないようにすることができます。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>$ACTION$ 時エラー発生件数 - ステータスコード別</title>
+      <chart>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| stats count by status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>(purchase) 時エラー発生件数 - ステータスコード別(スケジュールレポート)</title>
+      <chart>
+        <title>国:(China)</title>
+        <search ref="ScheduledReport_for_DashboardWorkshop"></search>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.chart">column</option>
+      </chart>
+    </panel>
+  </row>
+</form>

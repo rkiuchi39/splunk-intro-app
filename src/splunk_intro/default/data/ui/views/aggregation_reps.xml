@@ -1,0 +1,43 @@
+<dashboard version="1.1" theme="dark">
+  <init>
+    <set token="INTERFACE">Bundle-Ether7261</set>
+  </init>
+  <label>アクセスログの集計 - 代表値</label>
+  <row>
+    <panel>
+      <html>
+    <p/>    <p/>    <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>URIパス毎の各代表値</title>
+      <html>
+<p>index=tutorial sourcetype=access_combined_wcookie</p>
+<p>| stats <font color="#ff6347"> max(bytes) p90(bytes) p75(bytes) median(bytes) avg(bytes) p25(bytes) p10(bytes) min(bytes)</font> by uri_path</p>
+<p>| foreach *(bytes) </p>
+<p>[ eval ＜＜FIELD＞＞ = round('＜＜FIELD＞＞' /1024, 2)</p>
+<p>| rename ＜＜FIELD＞＞ as ＜＜MATCHSTR＞＞_転送量(kb) ]</p>
+<p>  <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Aggregatefunctions" target="_blank">サーチリファレンス(Aggregate Function)</a>
+        </p>
+<p> <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Foreach" target="_blank">サーチリファレンス(foreich)</a>
+        </p>
+      </html>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| stats  max(bytes) p90(bytes) p75(bytes) median(bytes) avg(bytes) p25(bytes) p10(bytes) min(bytes) by uri_path
+| foreach *(bytes) 
+    [ eval &lt;&lt;FIELD&gt;&gt; = round('&lt;&lt;FIELD&gt;&gt;'  /1024, 2)
+    | rename &lt;&lt;FIELD&gt;&gt; as &lt;&lt;MATCHSTR&gt;&gt;_転送量(kb) ]</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>100</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

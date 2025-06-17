@@ -1,0 +1,44 @@
+<form version="1.1" theme="dark">
+  <label>入力フィールド: リンクリスト</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="text" token="COUNTRY" searchWhenChanged="true">
+      <label>国名(英語)</label>
+      <default>*</default>
+    </input>
+    <input type="link" token="STATUS" searchWhenChanged="true">
+      <label>エラー種別</label>
+      <choice value="4*">Client Error</choice>
+      <choice value="5*">Server Error</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+リンクリストは主に横並びで選択リストを表示するときに使用します。ラジオボタンは縦並びの選択リストになるので、横に選択リストを並べたいときに便利です。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>URIパス毎のエラー発生件数</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=$STATUS$
+          | iplocation clientip
+          | search Country=$COUNTRY$
+          | stats count by uri_path </query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

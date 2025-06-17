@@ -1,0 +1,146 @@
+<form version="1.1" theme="dark">
+  <init>
+    <unset token="ORDINARY_SHOW"></unset>
+    <unset token="POST_SHOW"></unset>
+  </init>
+  <label>ポストプロセスサーチ</label>
+  <search id="server_error">
+    <query>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* 
+    | bin _time span=1d
+    | table _time action categoryId status uri_path
+      </query>
+    <earliest>$PERIOD.earliest$</earliest>
+    <latest>$PERIOD.latest$</latest>
+    <progress>
+      <eval token="DONE_PERC">round($job.doneProgress$ * 100, 2)</eval>
+      <eval token="DONE_PERC">$DONE_PERC$."%"</eval>
+      <set token="form.INDISCARDS_BASE">$DONE_PERC$</set>
+    </progress>
+    <done>
+      <set token="form.INDISCARDS_BASE">完了</set>
+    </done>
+  </search>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="text" token="INDISCARDS_BASE">
+      <label>ベースサーチ進捗</label>
+    </input>
+    <input type="radio" token="POST_RADIO" searchWhenChanged="true">
+      <label>ポストプロセスの結果</label>
+      <choice value="YES">表示</choice>
+      <choice value="NO">隠す</choice>
+      <default>NO</default>
+      <change>
+        <condition match="$POST_RADIO$=&quot;YES&quot;">
+          <set token="POST_SHOW">YES</set>
+        </condition>
+        <condition match="$POST_RADIO$=&quot;NO&quot;">
+          <unset token="POST_SHOW"></unset>
+        </condition>
+      </change>
+      <initialValue>NO</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+似たようなサーチを実行する複数のパネルがあった場合、ベースサーチを定義し、その結果をそれぞれのパネルで受けて使うポストプロセスサーチを実装することで、同じようなサーチを複数回実行することによるリソースの消費を削減することができます。<br/>
+ポストプロセスサーチはダッシュボードの表示速度を向上させる方向には機能しませんが、限られたリソースをチームで有効活用する上で大切な手段になります。<br/>
+ポストプロセスサーチの実装はソースコードを編集して、search エレメントに ID を設定しなければなりません。<br/>
+このダッシュボードでは以下の 2 つのエレメントが使われています。
+<ul>
+  <li> search id="server_error": ベースサーチの設定</li>
+  <li> search base="server_error": ベースサーチの利用</li>
+</ul>
+ポストプロセスサーチで使用するベースサーチは、Transforming コマンドを使用するようにしてください。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>URIパス毎のエラー件数推移</title>
+      <html>
+index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* <br/>
+
+| timechart span=1d count
+      </html>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* 
+    | bin _time span=1d
+| timechart count by uri_path</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>URIパス毎のエラー件数 - 商品カテゴリ別</title>
+      <html>
+index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* <br/>
+| chart count by uri_path categoryId
+      </html>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* 
+| chart count by uri_path categoryId
+</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row depends="$POST_SHOW$">
+    <panel>
+      <title>URIパス毎のエラー件数推移(ポストプロセスサーチ)</title>
+      <html>
+      <font color="red">index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*  <br/>
+          | bin _time span=1d <br/>
+          | table _time action categoryId status uri_path <br/>
+        </font>
+| timechart count by uri_path
+      </html>
+      <chart>
+        <search base="server_error">
+          <query>| timechart count by uri_path</query>
+        </search>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>商品カテゴリ別 URIパス毎のエラー件数(ポストプロセスサーチ)</title>
+      <html>
+      <font color="red">index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*  <br/>
+          | bin _time span=1d <br/>
+          | table _time action categoryId status uri_path <br/>
+        </font>
+| timechart count by uri_path
+      </html>
+      <chart>
+        <search base="server_error">
+          <query>| chart count by uri_path categoryId</query>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+      </chart>
+    </panel>
+  </row>
+</form>

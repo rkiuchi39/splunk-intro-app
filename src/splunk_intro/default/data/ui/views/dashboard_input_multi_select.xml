@@ -1,0 +1,93 @@
+<form version="1.1" theme="dark">
+  <label>入力フィールド: マルチセレクト</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+マルチセレクトは決まっている選択肢の中から複数を選んで可視化を制御する場合に使います。サーチ結果から動的に選択肢を構成することもできます。<br/>
+入力フィールドオプションで、トークンプレフィックス、トークンサフィックス、区切り文字を設定し、サーチでは IN 条件を使うのがコツです。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数 - ステータスコード別</title>
+      <chart>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| stats count by status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数  - URIパス別</title>
+      <chart>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| chart count by uri_path</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,265 @@
+<dashboard version="1.1" theme="dark">
+  <label>アクセスログから件数を数える</label>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>指定したフィールドの固有値</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie status=5*</p>
+        <p>| timechart count as "server_error" <font color="#ff6347">dc(clientip)</font> as "unique_ip" </p>
+        <a href="https://docs.splunk.com/Documentation/SplunkCloud/9.0.2303/SearchReference/Aggregatefunctions#distinct_count.28.26lt.3Bvalue.26gt.3B.29_or_dc.28.26lt.3Bvalue.26gt.3B.29" target="_blank">サーチリファレンス</a>
+       <p/>
+       <p/>
+      </html>
+      <chart>
+        <title>サーバーエラー発生件数とクライアントIPの固有値</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart count as "server_error" dc(clientip) as "unique_ip"</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.text">件数</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.overlayFields">unique_ip</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="height">252</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>指定したフィールドでのグルーピング</title>
+      <html>
+       <p>index=tutorial sourcetype=access_combined_wcookie status=5*</p>
+       <p>| timechart count as "server_error" <font color="#ff6347 ">by</font>  method</p>
+ 
+      </html>
+      <chart>
+        <title>サーバーエラー発生件数 - メソッド毎</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart count as "server_error" by method</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>タイムスケールの時間軸の単位を指定</title>
+      <html>
+         <p>index=tutorial sourcetype=access_combined_wcookie status=5*</p>
+         <p>| timechart <font color="#ff6347"> span=6h </font> count as "server_error" by status </p> 
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Chart#Span_options" target="_blank">サーチリファレンス</a>
+          <p/>
+       <p/>
+      </html>
+      <chart>
+        <title>サーバーエラー発生件数 - ステータスコード毎</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart span=6h count as "server_error" by status</query>
+          <earliest>-7d</earliest>
+          <latest>-3d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>フィールドを指定した単位で離散化</title>
+      <html>
+<p>index=tutorial sourcetype=access_combined_wcookie status=200</p>
+<p>| <font color="#ff6347"> bin bytes span=1000 </font>
+        </p>
+<p>| chart count by uri_path bytes</p> 
+ <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Chart#Bin_options" target="_blank">サーチリファレンス</a>
+      <p/>
+       <p/>
+      </html>
+      <table>
+        <title>URIパス毎の受信バイト数 (過去7日間)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=200
+| bin bytes span=1000
+| chart count by uri_path bytes</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="color" field="5000-6000">
+          <colorPalette type="minMidMax" maxColor="#D41F1F" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="90-100">
+          <colorPalette type="list">[#3C444D,#D41F1F]</colorPalette>
+          <scale type="threshold">1</scale>
+        </format>
+        <format type="color" field="80-90">
+          <colorPalette type="list">[#3C444D,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">1,100</scale>
+        </format>
+        <format type="color" field="70-80">
+          <colorPalette type="list">[#3C444D,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">1,100,300</scale>
+        </format>
+        <format type="color" field="60-70">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="50-60">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="40-50">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="30-40">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="20-30">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="number" field="10-20"></format>
+        <format type="color" field="10-20">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="0-10">
+          <colorPalette type="list">[#3C444D]</colorPalette>
+          <scale type="threshold"></scale>
+        </format>
+        <format type="color" field="4000-5000">
+          <colorPalette type="list">[#118832,#D41F1F]</colorPalette>
+          <scale type="threshold">100</scale>
+        </format>
+        <format type="color" field="3000-4000">
+          <colorPalette type="list">[#118832,#277C52,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">500,1000,1500,2000</scale>
+        </format>
+        <format type="color" field="2000-3000">
+          <colorPalette type="list">[#118832,#277C52,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">1000,2000,3000,4000</scale>
+        </format>
+        <format type="color" field="1000-2000">
+          <colorPalette type="list">[#118832,#277C52,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">1500,3000,4500,6000</scale>
+        </format>
+        <format type="color" field="0-1000">
+          <colorPalette type="list">[#118832,#1182F3,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">5000,10000,15000,20000</scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>フィールド毎に件数を数える</title>
+      <html>
+         <p> index=tutorial sourcetype=access_combined_wcookie action=*</p>
+         <p>| stats <font color="#ff6347"> count(eval(method="GET")) </font> as "GET", <font color="#ff6347"> count(eval(method="POST")) </font> as "POST" BY uri_path</p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/Search/Usestatswithevalexpressionsandfunctions#Use_eval_expressions_to_count_the_different_types_of_requests_against_each_Web_server" target="_blank">サーチリファレンス</a>
+      <p/>
+       <p/>
+         
+      </html>
+      <table>
+        <title>URIパスへのリクエスト数 - メソッド毎 (過去7日間)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=*
+| stats count(eval(method="GET")) as "GET", count(eval(method="POST")) as "POST" by uri_path</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="POST">
+          <option name="precision">0</option>
+          <option name="unitPosition">before</option>
+        </format>
+        <format type="number" field="GET">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="POST">
+          <colorPalette type="minMidMax" maxColor="#D41F1F" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax" maxValue="4641" minValue="2"></scale>
+        </format>
+        <format type="color" field="GET">
+          <colorPalette type="minMidMax" maxColor="#D41F1F" minColor="#3C444D"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+</dashboard>

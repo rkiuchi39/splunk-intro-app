@@ -1,0 +1,135 @@
+<dashboard version="1.1" theme="dark">
+  <label>アクセスログの集計 - 傾向</label>
+  <row>
+    <panel>
+      <title>trendline を用いた移動平均線 (Simple Moving Average)</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*</p>
+        <p>| timechart count as purchase span=1h </p>
+        <p>
+            <font color="#ff6347"> | trendline sma10(purchase) </font>
+          </p>
+        <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Trendline" target="_blank">サーチリファレンス(trendline)</a>
+        </p>
+      </html>
+      <chart>
+        <title>購入アクション時のエラー発生件数と直近10時間の移動平均</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*
+| timechart count as purchase span=1h
+| trendline sma10(purchase)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-2d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>streamstats  -  特定範囲のイベントに対する集計(stats)結果を取得</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*</p>
+        <p>| timechart count as error span=1h </p>
+        <p>|<font color="#ff6347"> streamstats current=f last(error) as prev_count </font>
+        </p>
+        <p>|eval gap = error - prev_count </p>
+        <p>| timechart last(gap) span=1h</p>
+        <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Streamstats" target="_blank">サーチリファレンス(streamstats)</a>
+        </p>
+      </html>
+      <chart>
+        <title>5日間のサーバーエラー発生件数の増減率</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart count as error span=1h
+| streamstats current=f  last(error) as prev_count
+| eval gap = error - prev_count
+| timechart last(gap) span=1h</query>
+          <earliest>-7d@d</earliest>
+          <latest>-2d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>eventstats  -  全体イベントの集計(stats)結果を取得</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5*</p>
+        <p>| timechart count as error span=1h </p>
+        <p>|<font color="#ff6347"> | eventstats avg(error) as avg_count </font>
+        </p>
+        <p>| eval gap = error- avg_count </p>
+        <p>| timechart last(gap) span=1h</p>
+        <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Eventstats" target="_blank">サーチリファレンス(eventstats)</a>
+        </p>
+      </html>
+      <chart>
+        <title>5日間のサーバーエラー発生件数全体平均との差分</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart count as error span=1h
+| eventstats avg(error) as avg_count
+| eval gap = error- avg_count
+| timechart last(gap) span=1h</query>
+          <earliest>-7d@d</earliest>
+          <latest>-2d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">45</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>predict - カルマンフィルターを使った未来値予測</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie</p>
+        <p>| timechart sum(bytes) as bytes span=1h </p>
+        <p>|<font color="#ff6347"> predict bytes period=24 future_timespan=24 lower95=lower_bound upper95=upper_bound </font>
+        </p>
+         <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/9.0.2303/SearchReference/Predict" target="_blank">サーチリファレンス(predict)</a>
+        </p>
+      </html>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| timechart sum(bytes) as bytes span=1h
+| predict bytes period=24 future_timespan=24 lower95=lower_bound upper95=upper_bound</query>
+          <earliest>-7d@d</earliest>
+          <latest>-2d@d</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisY.abbreviation">auto</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

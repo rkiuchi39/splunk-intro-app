@@ -1,0 +1,58 @@
+<form version="1.1" theme="dark">
+  <label>ドリルダウン: ダッシュボード</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+ドリルダウン先に別のダッシュボードを指定することができます。<br/>
+[製品毎の購入件数(国別)] パネルの任意の行をクリックしてみてください。<br/>
+ダッシュボードへのドリルダウンは GUI の [ドリルダウンを編集] から行うことができます。<br/>
+        <br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>製品毎の購入件数(国別)</title>
+      <table>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase 
+| bin _time span=1d 
+| iplocation clientip
+| search Country IN $COUNTRY$
+| chart count by productId Country</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <drilldown>
+          <link target="_blank">/app/splunk_intro/dashboard_drilldown_dashboard_target?form.PERIOD.earliest=$PERIOD.earliest$&amp;form.PERIOD.latest=$PERIOD.latest$&amp;form.PRODUCTID=$row.productId$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

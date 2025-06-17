@@ -1,0 +1,107 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) Index と Source Typeについて</label>
+  <row>
+    <panel>
+      <title>イベントの絞り込みのポイント</title>
+      <html>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>Index</b>
+            </font>
+          </font> <p/>
+        Index はデータのリポジトリです。Splunk は取り込んだ生データが Index に取り込まれる過程で検索可能なイベントに変換されます。<p/>
+        サーチを実行するときには、検索対象となるデータのレポジトリとして Index を明示的に指定するようにしましょう。<p/>
+          <br/>
+
+          
+       <font color="#1e90ff">
+          <font size="5"> <b>Source Type</b>
+            </font>  </font> <p/>
+Splunk は データを正しく解釈し、適切に処理するために、Source Type（sourcetype）を使用します。
+Source Type により収集されたデータが何であるかを識別して適切な形式でIndex化したり、フィールド抽出を行います。Source Type は Splunk で取り込まれたデータから自動的にSource Typeを識別したり、必要に応じて手動で　Source Typeを定義することもできます。<br/>
+
+サーチを実行するときには、1つの Index の中に複数のSource Type のデータが含まれている場合があるので、Index だけでなく　Source Typeも指定してフィルタリングを行うと、不要なデータを検索のスキャン対象から外してサーチの効率がよくなります。<br/>
+
+それでは、Index と Source Type を指定してサーチを実行してみましょう。
+   </font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+     <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ実行結果</b>
+            </font>
+          </font>  <br/>
+  右パネルは前回同様に以下のサーチ文を実行した結果です。集計結果をそのままイベント表記で出しています。<p/>
+  
+  
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+
+</table>
+<br/>
+
+左側のクチバシ「＞」をクリックすると、検索された個々のイベントの詳細情報が確認できます。「フィールド」欄いは、メタデータが表示されています。
+
+
+<font color="#ff1493 ">
+            <b>パネル右下の虫眼鏡アイコンをクリックして、実際のサーチ画面から結果を確認してみてださい。</b> </font>
+  <br/>
+  
+     <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ画面の表記</b>
+            </font>
+          </font>  <br/>
+それぞれ場所の確認、および動作確認を行ってください。    <p/>     
+• <font color="#1e90ff">
+            <b>サーチバー</b>
+          </font>: サーチ文が表示されている入力フォーム。<p/>
+• <font color="#1e90ff">
+            <b>サーチモード</b>
+          </font>: サーチバーからサーチを実行するときのデフォルトはスマートモード。Dashboard であらかじめ定義済みのサーチを実行している場合は、高速モードで実行されます。フィールドサーチで改めて紹介します。<p/>
+• <font color="#1e90ff">
+            <b>タイムピッカー</b>
+          </font>：検索対象とするタイムレンジ。この例では「過去7日」(=サーチ実行時刻からちょうど7日前 - 現在)が指定。<p/>
+• <font color="#1e90ff">
+            <b>タイムライン</b>
+          </font>:検索結果のイベントの時系列の分布状況を表示。カラムチャート上にマウスを置いてドラッグするとイベントの再絞り込みが可能。<p/>
+• <font color="#1e90ff">
+            <b>フィールドリスト</b>
+          </font>:画面左のフィールド(メタデータ)の一覧。<p/>
+• <font color="#1e90ff">
+            <b>時間フィールド</b>
+          </font>:サーチ結果の個々のイベントの「時間」欄。データのタイムスタンプの出力やSplunkアカウントのタイムゾーン設定に応じて、たとえば日本時間に変換してイベントの時間を表示します。<p/>
+• <font color="#1e90ff">
+            <b>イベントフィールド</b>
+          </font>:検索結果として返ってきたイベントの生データが表示。<p/>
+
+<p/>
+
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (イベント表記)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+</dashboard>

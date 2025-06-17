@@ -1,0 +1,276 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) 加工 - eval によるフィールド生成2</label>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5">
+              <b> eval if 関数 </b>
+            </font>
+          </font> <p/>
+eval if 関数を使用すると、フィールドが完全一致しているデータを条件に、新しいフィールドを設定します。<p/>
+eval関数は、サーチ結果を使用して新しいフィールドを作成したり、既存のフィールドを操作したりするために使用されます。<p/>
+
+<br/>
+
+　
+</font>
+        
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>eval if 関数 - 完全一致</b>
+            </font>
+          </font> <p/>
+
+以下のサーチ例は、アクセスログに記録されたリファラー情報が、自社サイト(http://www.buttercupgames.com") か、外部検索エンジンかをカテゴリ分けしています。
+ <br/>
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie </td>
+</tr>
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval referer_domain_category = if(referer_domain == "http://www.buttercupgames.com", "Internal", "Search_Engine")</td>
+</tr>
+</table>
+          <br/>
+
+サーチの実行結果を下パネル左のクチバシマークから開くと、2行目で定義した referer_domain_category というフィールドが生成されていることが分かります。<p/>
+
+
+
+
+
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (eval if 関数 - 部分一致)</title>
+      <event>
+        <title>リファラーのカテゴリ分け</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| eval referer_domain_category = if(referer_domain == "http://www.buttercupgames.com", "Internal", "Search_Engine")</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>eval if 関数 - 部分一致</b>
+            </font>
+          </font> <p/>
+
+以下のサーチ例でも、アクセスログに記録されたリファラー情報が、自社サイト(http://www.buttercupgames.com") か、外部検索エンジンかをカテゴリ分けしていますが、サイト名の指定にワイルドカードを使用しています。
+
+ <br/>
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie </td>
+</tr>
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval referer_domain_category = if(like(referer_domain, "%buttercupgames%"),  "Internal", "Search_Engine")</td>
+</tr>
+</table>
+          <br/>
+
+サーチの実行結果を右パネル左のクチバシマークから開くと、2行目で定義した referer_domain_category というフィールドが生成されていることが分かります。   <br/>
+
+
+ <font color="#ff1493">
+              <b> eval 式内の演算子や引用符について </b>
+
+<br/>
+• eval コマンド内では、文字列を値に指定する場合には引用符で囲む必要があったり、大文字小文字が常に識別されたり、条件文で等号を指定する際には == と書くことができたりと Java や Python などのプログラム言語に近くなっています。<p/>
+• eval 内の式は複雑になる傾向があるため、プログラミングのプラクティスに従って演算子の前後には空白を入れた方が後から読みやすいサーチを書くことができます。<p/>
+
+ </font>
+        </font>
+  
+  </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (eval if 関数 - 部分一致)</title>
+      <event>
+        <title>リファラーのカテゴリ分け</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| eval referer_domain_category = if(like(referer_domain, "%buttercupgames%"),  "Internal", "Search_Engine")</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5">
+              <b> eval 数字の扱い </b>
+            </font>
+          </font> <p/>
+eval 式内では数値データに対して不等号を使った大小判断ができます。eval 内で設定する値は引用符でくくらなければ数値として扱われます。
+<br/>
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>数値を使った条件</b>
+            </font>
+          </font> <p/>
+
+以下のサーチ例は、アクセスログから20時-24時までに実施された購入処理をカテゴリ分けして、Peak_Time という新規フィールドを使って他と区別しています。<p/>
+20時以前のイベントは 0(false)、20時以降のイベントは 1(true)という意味合いを持たせています。
+
+ <br/>
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie action=purchase </td>
+</tr>
+<tr bgcolor="blue">
+              <td>2行目</td>
+              <td>加工</td>
+              <td>| eval Peak_Time = if(date_hour ＜ 20, 0, 1)</td>
+</tr>
+</table>
+          <br/>
+
+サーチの実行結果を右パネル左のクチバシマークから開くと、Peak_Time というフィールドが生成されていて、イベントのタイムスタンプの時間(Hour)に応じて、Peark_time かどうかが識別されています。実際に行いたい分析や集計に応じて、データの加工を行ってください。<br/>
+
+eval は1行で複数のeval 式をカンマで区切って連結することも、パイプの後続式で別々に定義することもできます。<p/>
+複数のeval式は、左から順番に処理され、後続の式ではすでに処理された eval で作成したフィールドを参照できます。<p/>
+
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (eval if 関数 - 完全一致)</title>
+      <event>
+        <title>リファラーのカテゴリわけ</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase 
+| eval Peak_Time = if(date_hour &lt; 20, 0, 1)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5">
+              <b> フィールドの結合 </b>
+            </font>
+          </font> <p/>
+eval 式がサポートされている演算子に連結があります。複数のフィールドの値を結合させて、新しいフィールド値として使用できます。<p/>
+<font color="#ff1493"> eval 式内でピリオドは繋ぐという意味になり、文字列の"スペース" "ダッシュ" "スペース"を挟んで結合しています。</font>
+<br/>
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>フィールドの結合</b>
+            </font>
+          </font> <p/>
+
+以下のサーチ例は、ステータスコード500を記録したアクセスログの、method と uri_path の組み合わせでまとめるために作成した eval 式です。
+
+ <br/>
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie status=500</td>
+</tr>
+<tr bgcolor="blue">
+              <td>2行目</td>
+              <td>加工</td>
+              <td>| eval filter  = method." - ".uri_path</td>
+</tr>
+</table>
+          <br/>
+
+右パネルは実際の結合結果を用いて、可視化した例になります。サーバーエラーが発生した method と uri_path の組み合わせをバーチャートで件数が多い順に表示させています。<p/>
+このような可視化に必要な分析、集計方法については、次のチャプターで紹介します。<br/>
+
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (フィールドの結合)</title>
+      <chart>
+        <title>メソッドとリファラー毎のサーバーエラー発生件数(過去7日分)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=500
+| eval filter = method." - ".uri_path
+| stats count by filter
+| sort - count</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

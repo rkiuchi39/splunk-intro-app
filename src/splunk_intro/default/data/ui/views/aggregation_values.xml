@@ -1,0 +1,135 @@
+<dashboard version="1.1" theme="dark">
+  <label>アクセスログの集計 - 特定の値を取り出す</label>
+  <row>
+    <panel>
+      <html>
+    <p/>    <p/>    <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>サーバーエラーが発生した最も最近のセッションID (過去7日)</title>
+      <html>
+<p>index=tutorial sourcetype=access_combined_wcookie status=5*</p>
+<p>| stats <font color="#ff6347">latest(JSESSIONID)</font>
+        </p>
+<p>  <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/CommonStatsFunctions#Alphabetical_list_of_functions" target="_blank">サーチリファレンス</a>
+        </p>
+      </html>
+      <single>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| stats latest(JSESSIONID)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x118832","0x118832"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">l</option>
+        <option name="useColors">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>サーバーエラーが発生した最も古いセッションID (過去7日)</title>
+      <html>
+<p>index=tutorial sourcetype=access_combined_wcookie status=5*</p>
+<p>| stats <font color="#ff6347">earliest(JSESSIONID)</font>
+        </p>
+<p>  <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/CommonStatsFunctions#Alphabetical_list_of_functions" target="_blank">サーチリファレンス</a>
+        </p>
+      </html>
+      <single>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| stats earliest(JSESSIONID)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0xdc4e41"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="underLabel">l</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>実際のイベント</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| fields _time,  JSESSIONID , _raw
+| sort 10 - _time</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="uptime_total_s">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Earliest">
+          <option name="precision">1</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Latest">
+          <option name="precision">1</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>実際のイベント</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| fields _time,  JSESSIONID , _raw
+| sort 10  _time</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">false</option>
+        <format type="number" field="uptime_total_s">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="Earliest">
+          <option name="precision">1</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Latest">
+          <option name="precision">1</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+    <p/>    <p/>    <p/>
+      </html>
+    </panel>
+  </row>
+</dashboard>

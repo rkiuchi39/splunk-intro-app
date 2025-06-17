@@ -1,0 +1,55 @@
+<form version="1.1" theme="dark">
+  <label>入力フィールド: ラジオボタン</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-6d@h</earliest>
+        <latest>-2d@d</latest>
+      </default>
+    </input>
+    <input type="text" token="COUNTRY">
+      <label>国名(英語)</label>
+      <default>*</default>
+    </input>
+    <input type="radio" token="MSG">
+      <label>購入時エラー</label>
+      <choice value="&quot;NothingInCart&quot; OR &quot;FormError&quot; OR &quot;CreditDoesNotMatch&quot;">Userエラー(操作)</choice>
+      <choice value="CreditNotAccepted">Userエラー(決済)</choice>
+      <choice value="CanNotGetCart">システムエラー</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+ラジオボタンは縦並びの選択リストを表示します。どれか一つを選択して可視化を制御したいときに便利です。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>購入数に占めるエラー(理由別)</title>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=200
+          | fillnull value=Normal msg
+          | iplocation clientip
+          | search Country=$COUNTRY$ msg=$MSG$ OR msg=Normal
+          | timechart span=4h count by msg</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisY.minimumNumber">0</option>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">log</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,420 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) 集計</label>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b/>
+            </font>
+          </font> <p/>
+これまで分析対象データの絞り込みと加工を行ってきました。<p/>
+これらを実際に活用して、集計や可視化を行っていくために必要なコマンドを見ていきます。<p/>
+以下のSPLの基本構造を今一度思い出して、３行目以降の基礎を学習すると認識してください。<p/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval kbytes = round(bytes/1024,2)</td>
+</tr>
+
+
+<tr bgcolor="#ff8c00 ">
+                  <td>3行目</td>
+              <td>集計</td>
+              <td>| chart sum(kbytes) by uri_path action </td>
+</tr>
+
+<tr bgcolor="deeppink">
+                  <td>4行目</td>
+              <td>整形</td>
+              <td>| rename "sum(kbytes)" as "合計転送量(KB)" uri_path as "URIパス" action as "カートアクション"</td>
+</tr>
+
+</table>
+　
+</font>
+        
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>表形式への変換</b>
+            </font>
+          </font> <p/>
+絞り込んだり、加工したデータに対して引数で指定したフィールドのみで構成されるテーブルを作るにはtableコマンドを使用します。 <p/>
+列は、フィールドが指定されたのと同じ順序で表示されます。 <p/>
+列ヘッダーはフィールド名になり各行にフィールド値が表示されます。<p/>
+このコマンドは、集計処理をせずに検索結果をテーブル表記にしているだけのため、可視化で使用することができません。<p/>
+
+<p/>
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>tableコマンド</b>
+            </font>
+          </font>  <br/>
+
+右パネルは以下のサーチの実行結果です。1行目で絞り込みを行い、返ってきたデータに対して、使用するフィールドを指定して、表グラフを作成しています。
+3行目の集計処理部分で、table コマンドの場合は表形式にするだけです。<br/>
+
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie status=5*</td>
+</tr>
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>なし</td>
+</tr>
+
+<tr bgcolor="#ff8c00">
+                <td>３行目</td>
+              <td>集計</td>
+              <td>| table _time clientip JSESSIONID method uri_path referer_domain</td>
+</tr>
+</table>
+<br/>
+</font>
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 - 絞り込んだデータをテーブル表記化する</title>
+      <table>
+        <title>サーバーエラーが発生した時刻・クライアント、セッションID、メソッド...など</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| table _time clientip JSESSIONID method uri_path referer_domain</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>statsコマンド(縦持ち集計)</b>
+            </font>
+          </font> <p/>
+statsコマンドは、統計関数を実行するためのコマンドです。データの集約、グループ化、および計算を行うことができます。<p/>
+以下にstatsコマンドの基本的な使用方法を説明します。<br/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="blue">
+              <td>構文</td>
+
+              <td>... | stats ＜統計関数＞ BY ＜フィールド＞＜フィールド＞...</td>
+</tr>
+</table> <br/>
+
+＜統計関数＞による実行結果を、BY句に続くフィールド名でグルーピングして表形式で結果を表示させます。<p/>
+出来上がった表形式のデータで、＜フィールド＞毎に縦列が追加されてい来ます。<p/>
+BY句を使用しない場合は、指定した＜統計関数＞の結果がフィールド単位ではなく、データ全体に適用されます。<p/>
+
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>statsの実行例</b>
+            </font>
+          </font>  <br/>
+右パネルの出力は以下のサーチ文では、過去7日間の転送量 (bytes) の平均値と最大値がaction と method 毎に集計され表形式で表示させたものです。<p/>
+
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>なし</td>
+</tr>
+
+<tr bgcolor="#ff8c00">
+                <td>3行目</td>
+              <td>集計</td>
+              <td>| stats avg(bytes) max(bytes) by uri_path action</td>
+</tr>
+</table>
+          <br/>
+
+縦持ち集計は複数の集計グループに対して複数の項目で集計する場合に有効な集計方法です。
+人間には読みづらい集計形式なので、集計の途中処理に使われることが多くなります。
+
+  <br/>
+<br/>
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>stats の実行結果</title>
+      <table>
+        <title>action と methodo 毎の転送量 (bytes) の平均値と最大値</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| stats avg(bytes) max(bytes) by uri_path action</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="KB変換+切り上げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="KB変換+切り下げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="オリジナル値(bytes)">
+          <option name="precision">0</option>
+          <option name="unit">Byte</option>
+        </format>
+        <format type="number" field="avg(bytes)"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>chartコマンド(横持ち集計・クロス集計)</b>
+            </font>
+          </font> <p/>
+chart コマンドも、統計関数を実行するためのコマンドです。stats 同様にデータ集約、グループ化、および計算を行うことができます。<p/>
+以下にchartコマンドの基本的な使用方法を説明します。<br/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="blue">
+              <td>構文</td>
+
+              <td>... | chart ＜統計関数＞(＜フィールド名＞) BY ＜フィールド1＞＜フィールド2＞</td>
+</tr>
+</table> <br/>
+
+
+＜統計関数＞による実行結果を、BY句に続く最初のフィールド名(フィールド1)でグルーピングして縦列が追加されます。<p/>
+２つ目のフィールド値(フィールド2)が、表形式の各列のヘッダとなり、フィールド値毎の行が追加されていきます。<p/>
+BY句を使用しない場合は、指定した＜統計関数＞の結果がフィールド単位ではなく、データ全体に適用されます。<p/>
+stats のようにフィールドを２つ以上使用することはできません。<br/>
+
+以下のような構文でも同じ結果が得られます。<p/>
+stats のようにフィールドを２つ以上使用することはできません。<br/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="blue">
+              <td>構文</td>
+
+              <td>... | chart ＜統計関数＞(＜フィールド名＞) BY ＜フィールド1＞＜フィールド2＞</td>
+</tr>
+</table> <br/>
+
+
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>chartの実行例</b>
+            </font>
+          </font>  <br/>
+以下のサーチ文では、過去7日間のクライアントIP毎のカートアクションを表形式で表示されます。<p/>
+統計関数の count では、1行目で絞り込んで返ってきたイベントの件数を出します。<p/>
+
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>なし</td>
+</tr>
+
+<tr bgcolor="#ff8c00">
+                <td>3行目</td>
+              <td>集計</td>
+              <td>| chart count by clientip action</td>
+</tr>
+</table>
+          <br/>
+
+横持ち集計は人間にとって読みやすい結果を得ることができます。可視化オプションと組み合わせることでより視覚的に分かりやすい表示が可能です。
+
+  <br/>
+<br/>
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>chartの実行結果</title>
+      <table>
+        <title>action と methodo 毎の転送量 (bytes) の平均値と最大値</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| chart count over clientip by action</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="KB変換+切り上げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="KB変換+切り下げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="オリジナル値(bytes)">
+          <option name="precision">0</option>
+          <option name="unit">Byte</option>
+        </format>
+        <format type="number" field="avg(bytes)"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>timechart コマンド</b>
+            </font>
+          </font> <p/>
+timechart コマンドは、時系列データに対して統計関数を実行するためのコマンドです。
+時系列データをさまざまな統計関数（平均、合計、最小値、最大値など）を用いて集計し、時系列グラフを生成することができます。
+stats 同様にデータ集約、グループ化、および計算を行うことができます。<p/>
+以下にtimechartコマンドの基本的な使用方法を説明します。<br/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="blue">
+              <td>構文</td>
+              <td>... | timechart ＜統計関数＞(＜フィールド名＞) BY ＜フィールド＞</td>
+</tr>
+</table> <br/>
+
+＜統計関数＞による実行結果を、BY句に続くフィールド名でグルーピングして表形式で結果を表示させます。<p/>
+その際、表形式の縦列には時間情報、横には＜フィールド＞で指定したフィールドの各値が追加されていきます。<p/>
+BY句を使用しない場合は、指定した＜統計関数＞の結果がフィールド単位ではなく、データ全体に適用されます。<p/>
+
+</font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>timechartの実行例</b>
+            </font>
+          </font>  <br/>
+以下のサーチ文では、1日毎の uri_path 毎のサーバーエラー件数が過去7日分集計されます。<p/>
+統計関数の count では、1行目で絞り込んで返ってきたイベントの件数を出します。<p/>
+
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie status=5*</td>
+</tr>
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>なし</td>
+</tr>
+
+<tr bgcolor="#ff8c00">
+                <td>3行目</td>
+              <td>集計</td>
+              <td>| timechart count by uri_path</td>
+</tr>
+</table>
+          <br/>
+
+右パネルで実行結果を表形式で出力させていますが、可視化オプションを選択すれば、そのまま可視化が適用されます。
+  <br/>
+<br/>
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>timechartの実行結果</title>
+      <table>
+        <title>action と methodo 毎の転送量 (bytes) の平均値と最大値</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie status=5*
+| timechart count by uri_path</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="KB変換+切り上げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="KB変換+切り下げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="オリジナル値(bytes)">
+          <option name="precision">0</option>
+          <option name="unit">Byte</option>
+        </format>
+        <format type="number" field="avg(bytes)"></format>
+      </table>
+    </panel>
+  </row>
+</dashboard>
