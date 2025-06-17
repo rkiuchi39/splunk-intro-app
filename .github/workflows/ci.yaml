@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -43,6 +45,14 @@ jobs:
       run: pip install splunk-packaging-toolkit
     - name: Build package
       run: slim package splunk_intro
+    - name: Bump version and tag
+      uses: anothrNick/github-tag-action@1.67.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: patch
+        RELEASE_BRANCHES: main
+        WITH_V: true
+        
     - name: Upload Release Asset
       uses: softprops/action-gh-release@v1
       with:
