@@ -1,0 +1,109 @@
+ <nav search_view="search" color="#ff4500">
+  <view name="table_of_contents" default='true' />
+    <collection label="コンテンツ"> 
+
+
+       <collection label="Splunk 入門 (サーチ)">
+           <collection label="Splunk 入門 (サーチ)">
+          <view name="intro_to_splunk_search"/>          <view name="search_index"/>
+          <view name="search_keyword"/>
+          <view name="search_field_misc"/>
+          <view name="search_field2"/>     
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)インデックスの指定</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20Mozilla&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)キーワード検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20http%3A%2F%2Fwww.buttercupgames.com%2Fproduct.screen*&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)ワイルドカード検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20CASE(Mozilla)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)大文字小文字を識別した検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20ACCESSORIES%20OR%20SPORTS&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)OR 検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20NOT%20ACCESSORIES%20OR%20SPORTS&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)NOT 検索</a>
+<a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20action%3Dpurchase&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)フィールド検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20action%20IN(purchase%2C%20addtocart%2C%20changequantity)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)フィールド IN 検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20action!%3Dview&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)フィールド != 検索</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20bytes%3E%3D2000&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)数値フィールド検索</a>
+       </collection>
+    <collection label="Splunk 入門 (加工)"> 
+          <view name="sdearch_eval"/>
+          <view name="search_eval2"/>    
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20%0A%7C%20eval%20kbytes%20%3D%20round(bytes%2F1024%2C2)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 計算 (四捨五入)</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20%0A%7C%20eval%20kbytes%20%3D%20ceil(bytes%2F1024)%20%60%60%60%20ceiling%20%E3%82%82%E5%8F%AF%20%60%60%60&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 計算 (切上げ)</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20%0A%7C%20eval%20kbytes%20%3D%20floor(bytes%2F1024)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 計算 (切捨て)</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%0A%7C%20eval%20referer_domain_category%3Dif(referer_domain%20%3D%3D%20%22http%3A%2F%2Fwww.buttercupgames.com%22%2C%20%22internal%22%2C%20%22external%22)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 条件 (文字列完全一致)</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%0A%7C%20eval%20referer_domain_category%3Dif(like(referer_domain%2C%20%22%25buttercupgames%25%22)%2C%20%22internal%22%2C%20%22external%22)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 条件 (文字列部分一致)</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20%0A%7C%20eval%2020-to-24%20%3D%20if(date_hour%20%3C%2020%2C%200%2C%201)&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 条件 (数値)</a>   
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20status%3D500%0A%7C%20eval%20filter%20%20%3D%20method.%22%20-%20%22.uri_path&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)eval - 結合</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20status%3D500%20%0A%7C%20eval%20filter%20%3D%20method.%22%20-%20%22.uri_path%20%0A%7C%20search%20filter%3D%22POST%20-%20%2Fcart.do%22&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)再検索</a>
+    </collection>
+       <collection label="Splunk 入門 (集計/整形)">
+         <view name="search_stat"/>  
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20status%3D5*%0A%7C%20table%20_time%20clientip%20JSESSIONID%20method%20uri_path%20referer_domain&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)表形式での表示</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%0A%7C%20stats%20sum(bytes)%20by%20uri_path%20action&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)縦持ち集計</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%0A%7C%20eval%20kbytes%20%3D%20round(bytes%2F1024%2C2)%0A%7C%20chart%20sum(kbytes)%20by%20uri_path%20action%0A%60%60%60%7C%20chart%20sum(bytes)%20over%20uri_path%20by%20action%20%E3%81%A7%E3%82%82%E5%8F%AF%60%60%60&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)横持ち集計</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20status%3D5*%0A%7C%20timechart%20count%20by%20uri_path&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">(サーチ)時系列集計</a>
+         <a href="/app/splunk_intro/search?q=search%20index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20status%3D5*%0A%7C%20table%20_time%20clientip%20JSESSIONID%20method%20uri_path%20referer_domain%0A%7C%20rename%20clientip%20as%20%22%E3%82%AF%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%B3%E3%83%88IP%22%20JSESSIONID%20as%20%22%E3%82%BB%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3ID%22%20method%20as%20%22%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%22%20%20uri_path%20as%20%22URI%E3%83%91%E3%82%B9%22%20referer_domain%20as%20%22%E3%83%AA%E3%83%95%E3%82%A1%E3%83%A9%E3%83%89%E3%83%A1%E3%82%A4%E3%83%B3%22&amp;display.page.search.mode=smart&amp;earliest=-7d&amp;latest=now&amp;display.page.search.tab=events&amp;display.general.type=events">表の整形 - フィールド名の整理</a>
+     </collection>
+    </collection>
+
+
+      <collection label="Splunk 入門 (集計手法)">
+      <view name="aggregation_count"/>
+      <view name="aggregation_sum"/>
+      <view name="aggregation_reps"/>
+      <view name="aggregation_values"/>
+      <view name="aggregation_trend"/>
+      <view name="date_operations"/>
+      <view name="enrichment_basics"/>
+      </collection>
+
+    <collection label="Splunk 入門 (ダッシュボード)"> 
+      <view name="dashboard_basic"/>
+      <view name="dashboard_input_text"/>
+      <view name="dashboard_input_radio_button"/>
+      <view name="dashboard_input_link"/>
+      <view name="dashboard_input_drop_down"/>
+      <view name="dashboard_input_multi_select"/>
+      <view name="dashboard_input_submit"/>
+      <view name="dashboard_input_submit_autorun"/>
+      <view name="dashboard_input_dependency"/>
+      <view name="dashboard_input_dependency_rejects"/>
+      <view name="dashboard_drilldown_search"/>
+      <view name="dashboard_drilldown_search_custom"/>
+      <view name="dashboard_drilldown_token"/>
+      <view name="dashboard_drilldown_dashboard"/>
+      <view name="dashboard_drilldown_handson"/>
+      <view name="dashboard_eventhandler_input"/>
+      <view name="dashboard_eventhandler_search"/>
+      <view name="dashboard_eventhandler_timeline"/>
+      <view name="dashboard_performance_sampling"/>
+      <view name="dashboard_performance_report"/>
+      <view name="dashboard_postprocess_search"/>
+      <view name="dashboard_prebuilt_panel"/>
+      <view name="dashboard_summary"/>
+    </collection>
+
+
+<collection label="Appendix (Dashboard Studioへの移行)">
+ <collection label="入力(Input)の移行">
+   <view name="input"/>
+   <view name="input_ds"/>
+</collection>
+ <collection label="可視化(Vizualization)の移行">
+   <view name="visualization"/>
+   <view name="visualization_dsabsolute"/>
+   <view name="visualization_dsgrid"/>
+</collection>
+ <collection label="ポストプロセスサーチ">
+   <view name="postprocesssearch_classic"/>
+   <view name="chainsearch"/>
+</collection>
+ <collection label="ドリルダウン">
+   <view name="drilldown"/>
+   <view name="drilldown_grid"/>
+</collection>
+
+  
+ </collection> </collection>
+      
+
+   
+  <view name="dashboards" />
+  <view name="search" />
+</nav>

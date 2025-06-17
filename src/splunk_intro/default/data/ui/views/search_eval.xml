@@ -1,0 +1,165 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) 加工 - eval によるフィールド生成1</label>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>eval　関数</b>
+            </font>
+          </font> <p/>
+evalは、Splunkのクエリ言語の中でも非常に重要な関数の1つです。<p/>
+eval関数は、サーチ結果を使用して新しいフィールドを作成したり、既存のフィールドを操作して上書きするために使用されます。<p/>
+具体的には、eval 関数の中で算術演算、条件式、文字列操作を用いてデータを評価して、新規フィールの作成や既存フィールドの上書きが行われます。<p/>
+以下は eval の基本的な構文です。<p/>
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="blue">
+              <td>構文</td>
+
+              <td>| eval new_field = expression</td>
+</tr>
+</table>
+          <br/>
+new_field は新しく作成するフィールドの名前を指定し、expressionは新しいフィールドの値を計算するための式を指定します。<p/>
+以下では実際のデータで例を示します。<p/>
+　
+</font>
+        
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ実行結果(四捨五入)</b>
+            </font>
+          </font>  <br/>
+
+右パネルは以下のサーチの実行結果です。1行目で絞り込みを行い、返ってきたデータに対して、２行目の eval で加工を行っています。byte という既存フィールドを加工して、新に　kbyte というフィールドを定義しています。<br/>
+
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie </td>
+</tr>
+
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval kbytes = round(bytes/1024,2)</td>
+</tr>
+</table>
+  <br/>
+右パネルのクチバシマークを開くと、2行目で定義した kbytes というフィールドが生成されていることが分かります。<p/>
+フィールド値は、eval 関数の定義により、bytes /1024 で計算され、かつ　round 関数により小数点第2位で四捨五入された結果です。<br/>
+eval 関数で使用するフィールド値　(bytes)も残っているので、加工前後の違いを確認してください。
+<br/>
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (eval を用いた四捨五入)</title>
+      <event>
+        <title>転送量の byte -&gt; kbyte への変換</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| eval kbytes = round(bytes/1024,2)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="list.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>切り上げ(ceil)と切り捨て(floor)</b>
+            </font>
+          </font>  <br/>
+
+round と同様に、ceil や floor 関数を用いることで、それぞれ切り上げと切り捨ての加工を行うことができます。<p/>
+右パネルは以下のそれぞれのサーチ結果から、最も新しいデータの加工前後の値を表したものです。
+
+<br/>
+
+切り上げ
+  <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie </td>
+</tr>
+
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval kbytes = ceil(bytes/1024) </td>
+</tr>
+
+</table>
+
+
+<p/>
+切り下げ
+ <table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie </td>
+</tr>
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval kbytes = floor(bytes/1024) </td>
+</tr>
+</table>
+
+  <br/>
+<br/>
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (加工前後の比較)</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| eval kbytes2 = ceil(bytes/1024)
+| eval kbytes = floor(bytes/1024)
+| stats latest(kbytes2) as "KB変換+切り上げ",  latest(kbytes) as "KB変換+切り下げ", latest(bytes) as "オリジナル値(bytes)"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="KB変換+切り上げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="KB変換+切り下げ">
+          <option name="unit">KB</option>
+        </format>
+        <format type="number" field="オリジナル値(bytes)">
+          <option name="precision">0</option>
+          <option name="unit">Byte</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+</dashboard>

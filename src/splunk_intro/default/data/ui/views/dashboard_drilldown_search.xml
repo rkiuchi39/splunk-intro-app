@@ -1,0 +1,89 @@
+<form version="1.1" theme="dark">
+  <label>ドリルダウン: サーチ</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+一番簡単なドリルダウンは自動サーチへのリンクです。[アクション(アクション名)時エラー発生件数 - ステータスコード別] パネル、[アクション(アクション名)時エラー発生件数 - URIパス別]チャートをクリックすることで、それぞれ関連するログがサーチされます。<br/>
+自動サーチへのリンクは各パネルの [その他のアクション]-&gt;[ドリルダウンの編集] メニューから行うことができます。
+        <br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数  - ステータスコード別</title>
+      <table>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| stats count by status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>z<option name="drilldown">cell</option>
+      </table>
+    </panel>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数  - URIパス別</title>
+      <chart>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| timechart count by uri_path</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

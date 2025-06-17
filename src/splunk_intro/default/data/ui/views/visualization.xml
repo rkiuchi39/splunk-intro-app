@@ -1,0 +1,272 @@
+<dashboard version="1.1" theme="dark">
+  <label>可視化の移行 (Classic)</label>
+  <description>クラシックダッシュボードで使用される主な可視化オプション</description>
+  <row>
+    <panel>
+      <html>
+  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>シングルバリュー</title>
+      <single>
+        <title>件数のみ</title>
+        <search>
+          <query>index=tutorial method=GET
+| eval kbytes = round(bytes/1024,2)
+| timechart span=1h sum(kbytes)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">0</option>
+        <option name="showTrendIndicator">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>シングルバリュー</title>
+      <single>
+        <title>トレンドインジケータ付</title>
+        <search>
+          <query>index=tutorial method=GET
+| eval kbytes = round(bytes/1024,2)
+| timechart span=1h sum(kbytes)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">0</option>
+        <option name="trendInterval">-1h</option>
+        <option name="underLabel">Compared to an hour before</option>
+      </single>
+    </panel>
+    <panel>
+      <title>シングルバリュー</title>
+      <single>
+        <title>スパークライン付</title>
+        <search>
+          <query>index=tutorial method=GET
+| eval kbytes = round(bytes/1024,2)
+| timechart span=1h sum(kbytes)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+        <option name="showTrendIndicator">0</option>
+      </single>
+    </panel>
+    <panel>
+      <title>シングルバリュー</title>
+      <single>
+        <title>トレンドインジケータ(割合)、スパークライン、キャプション</title>
+        <search>
+          <query>index=tutorial method=GET
+| eval kbytes = round(bytes/1024,2)
+| timechart span=1h sum(kbytes)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="numberPrecision">0.0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="underLabel">1時間毎の傾向</option>
+        <option name="unit">KB</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>シングルバリュー</title>
+      <single>
+        <title>トレンドインジケータ(割合)、スパークライン、キャプション</title>
+        <search>
+          <query>index=tutorial method=GET
+| eval kbytes = round(bytes/1024,2)
+| timechart span=1h sum(kbytes)</query>
+          <earliest>-7d@d</earliest>
+          <latest>-3d@d</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="numberPrecision">0.0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">percent</option>
+        <option name="trendInterval">-1h</option>
+        <option name="underLabel">1時間毎の傾向</option>
+        <option name="unit">KB</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>カラムチャート</title>
+      <chart>
+        <title>Internal Server Error  - アクセス元別</title>
+        <search>
+          <query>index=tutorial status=5*
+| iplocation clientip
+| timechart count by Country</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>カラムチャート+ラインチャートのオーバレイ</title>
+      <chart>
+        <title>Internal Server Error  数 / 全ての GET</title>
+        <search>
+          <query>index=tutorial method=GET
+| timechart span=1h count as total count(eval(status ="500" OR status ="503" OR status ="504")) as "Internal Server Error"</query>
+          <earliest>-1w@w</earliest>
+          <latest>@w</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisY2.enabled">1</option>
+        <option name="charting.axisY2.fields">liner</option>
+        <option name="charting.axisY2.maximumNumber">10</option>
+        <option name="charting.axisY2.minimumNumber">0</option>
+        <option name="charting.axisY2.scale">linear</option>
+        <option name="charting.chart.overlayFields">"Internal Server Error"</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.fieldColors">{"total": 0x639BF1, "splunkd":0xFF5A09}</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.masterLegend">null</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="height">300</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>チャートカラーオプション</title>
+      <chart>
+        <title>製品別購入件数</title>
+        <search>
+          <query>index=tutorial action=purchase
+| top productId</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.backgroundColor">#475565</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.fontColor">#99CCFF</option>
+        <option name="charting.foregroundColor">#EBF5FF</option>
+        <option name="charting.seriesColors">[0xEBF0F5,0xC2D1E0,0x99B2CC,0x7094B8,0x4775A3,0x2E5C8A,0x24476B,0x1A334C,0x0F1F2E,0x050A0F]</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>トレリスレイアウト</title>
+      <chart>
+        <title>曜日別アクション傾向</title>
+        <search>
+          <query>index=tutorial
+| chart count  by action date_wday</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">collapsed</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">small</option>
+        <option name="trellis.splitBy">date_wday</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Radial Gauge + パネル内 HTML 挿入</title>
+      <html>
+      <font color="#00bfff">
+          <b>過去7日間のInternal Server Error件数合計</b>
+          <p/>
+        </font>
+          　2000件以上＝<font color="#ffff00">黄</font>
+        <p/>
+          　3000件以上＝<font color="#ff0000">赤</font>
+        <p/>
+        <p/> <p/> <p/>
+      </html>
+      <chart>
+        <title>過去7日間の Internal Server Error 件数</title>
+        <search>
+          <query>index=tutorial status=5*
+| stats count</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.rangeValues">[0,2000,3000,10000]</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.gaugeColors">["0x118832","0xcba700","0xd41f1f"]</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+  </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Sankey ダイアグラム</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>index=tutorial
+ | stats count by referer_domain uri_path status</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+        <option name="sankey_diagram_app.sankey_diagram.colorMode">categorical</option>
+        <option name="sankey_diagram_app.sankey_diagram.maxColor">#3fc77a</option>
+        <option name="sankey_diagram_app.sankey_diagram.minColor">#d93f3c</option>
+        <option name="sankey_diagram_app.sankey_diagram.numOfBins">6</option>
+        <option name="sankey_diagram_app.sankey_diagram.showBackwards">true</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLabels">1</option>
+        <option name="sankey_diagram_app.sankey_diagram.showLegend">1</option>
+        <option name="sankey_diagram_app.sankey_diagram.showSelf">false</option>
+        <option name="sankey_diagram_app.sankey_diagram.showTooltip">1</option>
+        <option name="sankey_diagram_app.sankey_diagram.styleBackwards">0</option>
+        <option name="sankey_diagram_app.sankey_diagram.useColors">1</option>
+      </viz>
+    </panel>
+  </row>
+</dashboard>

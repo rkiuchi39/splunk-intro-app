@@ -1,0 +1,96 @@
+<form version="1.1" theme="dark">
+  <label>ドリルダウン: トークン</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+ドリルダウンにトークンを使うことで、入力フィールドを使わずに検索条件を設定して、パネルを開くことができます。<br/> ドリルダウントークンを設定するには各パネルの [その他のアクション]-&gt;[ドリルダウンの編集] メニューから [このダッシュボード上のトークンの管理] を選択します。<br/> [URIパス毎のエラー発生件数 - ステータスコード別] パネルの [ドリルダウンを編集] から設定内容を確認してください。<br/> 設定では以下のトークンが使われています。<br/> <ul> <li>form.トークン名: トークン名に form を付けることで対応する入力フィールドにも値が表示されます。</li> <li>row.フィールド名: クリックした行の指定したフィールドの値</li> </ul> 
+        <br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>URIパス毎のエラー発生件数 - ステータスコード別</title>
+      <table>
+        <title>国: $COUNTRY$、$ACTION$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| bin _time span=1d | iplocation clientip
+| search Country IN $COUNTRY$ 
+| chart count by uri_path status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="form.URI_PATH">$row.uri_path$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel depends="$URI_PATH$">
+      <title>URIパス毎のエラー発生件数 - 過去1週間</title>
+      <input type="text" token="URI_PATH" searchWhenChanged="true">
+        <label>URIパス</label>
+      </input>
+      <chart>
+        <title>$URI_PATH$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*) uri_path=$URI_PATH$
+| bin _time span=1d 
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| chart count by _time status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

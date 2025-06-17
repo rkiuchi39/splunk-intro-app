@@ -1,0 +1,144 @@
+<dashboard version="1.1" theme="dark">
+  <label>ドリルダウンの移行(Classic)</label>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+        <p/>
+<font color="##00bfff">
+          <b>   •　Dashboard Studio で「サーチにリンク(Link to Search)」オプションは将来実装予定。現在は利用不可。<p/>
+   •　以下の２つのパネルはドリルダウンを含まない/不完全な形で Dashboard Studio に移行される。</b>
+        </font>
+        <p/> <p/> <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>ドリルダウン: サーチ --- Link To Search</title>
+      <table>
+        <title>購入アクション時のエラー発生件数/ステータスコード(日別)</title>
+        <search>
+          <query>index=tutorial action=purchase status=5*
+| timechart count by status</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>z<option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>ドリルダウン: カスタムサーチ --- Link To Custom Search</title>
+      <table>
+        <title>uri_path毎のエラー発生件数/ステータスコード</title>
+        <search>
+          <query>index=tutorial status=5*
+| chart count by uri_path status</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>z<option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtgcon%20status%3D$click.name2$%0A%7C%20chart%20count%20by%20uri_path%20action&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+<font color="##00bfff">
+          <b>  •　Dashboard Studio で別ダッシュボードへのリンクオプションはサポートされている。<p/>
+   •　以下のパネルはそのまま Dashboard Studio に移行される。</b>
+        </font>
+        <p/> <p/> <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>ドリルダウン: Link To Dashboard</title>
+      <chart>
+        <title>購入アクション(国別)</title>
+        <search>
+          <query>index=tutorial action=purchase 
+| bin _time span=1d 
+| iplocation clientip
+| chart count by _time Country</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked100</option>
+        <option name="charting.drilldown">all</option>
+        <option name="height">249</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">/app/tgcon/202302_TGCON_Visualization</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+<font color="##00bfff">
+          <b>   •　Dashboard Studio でトークンのセット(Set Tokens)オプション自体はサポートされている。<p/>
+   •　トークンのセットの移行機能は限定的であるため、移行後に再設定が必要なケースが大半。</b>
+        </font>
+        <p/> <p/> <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>ドリルダウン: トークン --- クリックで uri_path をトークンにして別パネルに渡す</title>
+      <table>
+        <title>Internal Server Error が発生した url_path を action 毎に集計</title>
+        <search>
+          <query>index=tutorial status=5*
+| bin _time span=1d
+| iplocation clientip
+| chart count by uri_path action</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <set token="URI_PATH">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel depends="$URI_PATH$">
+      <title>ドリルダウン: トークン --- トークンが渡されたパネル</title>
+      <chart>
+        <title>Internal Server Error が発生した url_path を国別に時系列で集計</title>
+        <search>
+          <query>index=tutorial uri_path=$URI_PATH$
+| bin _time span=1h
+| iplocation clientip
+| timechart count by Country</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsY.majorUnit">1</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">connect</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.placement">top</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

@@ -1,0 +1,90 @@
+<form version="1.1" theme="dark">
+  <label>イベントハンドラー: タイムライン</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@d</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="STATUS">
+      <label>ステータスコード</label>
+      <fieldForLabel>status</fieldForLabel>
+      <fieldForValue>status</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by status</query>
+        <earliest>-7d@d</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+タイムラインチャートで選択された時間をトークンで取得し、別パネルのサーチに利用することができます。<br/>
+[URIパス参照件数] チャートの時間範囲をマウスで選択してみてください。<br/>
+マウスで選択した範囲は以下のエレメントでソースコードを編集することで取得できます。<br/>
+<ul>
+  <li>selection: タイムライン選択ハンドラー、以下のトークンが利用可能</li>
+  <li>start: タイムライン上の開始時間</li>
+  <li>end: タイムライン上の終了時間</li>
+</ul>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>URIパス参照件数 --- フィルタ条件① アクション$ACTION$、フィルタ条件② ステータスコード$STATUS$</title>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN $STATUS$
+| timechart count by uri_path</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <selection>
+          <set token="SEL_EARLIEST">$start$</set>
+          <set token="SEL_LATEST">$end$</set>
+        </selection>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>選択したタイムライン期間のメソッド内訳</title>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN $STATUS$
+                 | chart count by method uri_path</query>
+          <earliest>$SEL_EARLIEST$</earliest>
+          <latest>$SEL_LATEST$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

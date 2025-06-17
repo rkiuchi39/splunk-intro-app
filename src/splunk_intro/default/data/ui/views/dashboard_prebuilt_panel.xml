@@ -1,0 +1,15 @@
+<dashboard version="1.1" theme="dark">
+  <label>事前定義済みパネル</label>
+  <row>
+    <panel>
+      <html>
+事前定義済みパネルを使えばチーム内で同じパネルを共有することができます。<br/>
+事前定義済みパネルは [設定] &gt; [ユーザーインターフェース] &gt; [事前定義済みパネル] で管理されています。<br/>
+利用に当たっては [パネルの追加] &gt; [事前定義済みパネルの追加] で行います。<br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel ref="Prebuilt_totalbytes_by_action" app="splunk_intro"></panel>
+  </row>
+</dashboard>

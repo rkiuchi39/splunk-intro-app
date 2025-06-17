@@ -1,0 +1,41 @@
+<form version="1.1" theme="dark">
+  <label>Dashboard Drilldown: Dashboard Target</label>
+  <fieldset submitButton="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="PRODUCTID" searchWhenChanged="true">
+      <label>プロダクトID</label>
+      <fieldForLabel>productId</fieldForLabel>
+      <fieldForValue>productId</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie action=purchase 
+| stats count by productId</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>製品別サーバエラー件数</title>
+      <table>
+        <title>$PRODUCTID$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=purchase status=5* productId=$PRODUCTID$
+| bin _time span=1d 
+| chart count by productId status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

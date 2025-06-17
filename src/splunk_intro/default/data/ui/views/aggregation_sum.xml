@@ -1,0 +1,57 @@
+<dashboard version="1.1" theme="dark">
+  <label>アクセスログの集計 - 合計</label>
+     <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+        <p/>
+      </html>
+    </panel>
+     </row>
+  <row>
+    <panel>
+      <title>URIパス、カートアクション毎の転送バイト数 (過去7日)</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie action=*</p>
+        <p>| eval kbytes = round(bytes/1024,2) </p>
+        <p>| chart <font color="#ff6347"> sum(kbytes) </font> as "transmission" by uri_path action</p>
+        <p>| fillnull value=0</p>
+        <p>| <font color="#ff6347"> addtotals col=t row=t labelfield=uri_path label="合計"</font>
+        </p>    
+        <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/Aggregatefunctions#sum.28.26lt.3Bvalue.26gt.3B.29" target="_blank">サーチリファレンス(sum関数)</a>
+        </p>
+        <p>
+          <a href="https://docs.splunk.com/Documentation/SplunkCloud/9.0.2303/SearchReference/Addtotals" target="_blank">サーチリファレンス(addtotals)</a>
+        </p>
+      </html>
+      <table>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action=*
+| eval kbytes = round(bytes/1024,2) 
+| chart sum(kbytes) as "transmission" by uri_path action
+| fillnull value=0
+| addtotals col=t row=t labelfield=uri_path label="合計"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">100</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="number" field="下りトラフィック">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="下りトラフィック">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="上りトラフィック"></format>
+      </table>
+    </panel>
+  </row>
+</dashboard>

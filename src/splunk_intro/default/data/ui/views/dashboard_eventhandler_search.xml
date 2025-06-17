@@ -1,0 +1,141 @@
+<form version="1.1" theme="dark">
+  <label>イベントハンドラー: サーチのステータス</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY" searchWhenChanged="true">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+      <default>China</default>
+    </input>
+    <input type="multiselect" token="ACTION" searchWhenChanged="true">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+      <default>purchase</default>
+    </input>
+    <input type="text" token="DISPATCH_STATE">
+      <label>サーチ状態</label>
+    </input>
+    <input type="text" token="SCAN_COUNT">
+      <label>スキャン数</label>
+    </input>
+    <input type="text" token="EVENT_COUNT">
+      <label>イベント数</label>
+    </input>
+    <input type="text" token="PROGRESS">
+      <label>進捗</label>
+    </input>
+    <input type="text" token="RUN_DURATION">
+      <label>経過秒</label>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+サーチに対するイベントハンドラーを使うことで、サーチの状態、スキャン数、イベント数、経過秒などを取得することができます。<br/>
+更に、サーチが完了した時点でサーチ ID を取得すれば、loadjob コマンドによりサーチ結果を別なパネルで再利用することも可能です。<br/>
+サーチに対するイベントハンドラーの実装には以下のエレメントを使ってソースコードを編集する必要があります。<br/>
+<ul>
+  <li>progress: サーチが開始されてから完了するまで一定のタイミングで呼び出される</li>
+  <li>done: サーチが完了したタイミングで呼び出される</li>
+</ul>
+また、サーチイベントハンドラーでは以下のトークンを利用できます。
+<ul>
+  <li>job.dispatchState: サーチの状態</li>
+  <li>job.scanCount: スキャンしたイベントの数</li>
+  <li>job.eventCount: スキャンした中でサーチ条件に合致したイベントの数</li>
+  <li>job.doneProgress: 0 から 1 の間でサーチの進捗率を返す</li>
+  <li>job.runDuration: サーチにかかった秒数</li>
+  <li>job.sid: サーチ ID</li>
+</ul>
+なお、このダッシュボードではサーチイベントハンドラーの実装に当たって以下のエレメントも使っています。
+<ul>
+  <li>eval: トークンに対して以下の関数を使って値を設定</li>
+  <li>tostring: eval 数値データに対して 3 桁ごとのカンマ区切り</li>
+  <li>.: 進捗率に対して%を結合</li>
+</ul>
+2 番目のパネルでは job.sid から取得した SID を使って loadjob を行い、さらに並び替えを行っています。
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数 - ステータスコード別</title>
+      <table>
+        <search>
+          <progress>
+            <unset token="SID"></unset>
+            <set token="form.DISPATCH_STATE">$job.dispatchState$</set>
+            <eval token="form.SCAN_COUNT">tostring($job.scanCount$, "commas")</eval>
+            <eval token="form.EVENT_COUNT">tostring($job.eventCount$, "commas")</eval>
+            <eval token="PROGRESS_PERC">round($job.doneProgress$ * 100, 2)</eval>
+            <set token="form.RUN_DURATION">$job.runDuration$</set>
+          </progress>
+          <done>
+            <set token="form.DISPATCH_STATE">$job.dispatchState$</set>
+            <eval token="form.SCAN_COUNT">tostring($job.scanCount$, "commas")</eval>
+            <eval token="form.EVENT_COUNT">tostring($job.eventCount$, "commas")</eval>
+            <set token="form.PROGRESS">100%</set>
+            <set token="form.RUN_DURATION">$job.runDuration$</set>
+            <set token="SID">$job.sid$</set>
+          </done>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| iplocation clientip
+| search Country IN $COUNTRY$ 
+| stats count by status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+        <format type="number" field="dc(root.mac)">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row depends="$SID$">
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数 - ステータスコード別 (loadjobを使用)</title>
+      <table>
+        <search>
+          <query>| loadjob $SID$ | sort - count
+</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

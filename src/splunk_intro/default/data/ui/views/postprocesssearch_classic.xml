@@ -1,0 +1,98 @@
+<dashboard version="1.1" theme="dark">
+  <label>ポストプロセスサーチ(Classic)</label>
+  <search id="server_error">
+    <query>index=tutorial action=purchase status=5* 
+    | bin _time span=1d
+    | table _time action categoryId status uri_path
+      </query>
+    <earliest>-1w@w</earliest>
+    <latest>@w</latest>
+  </search>
+    <row>
+    <panel>
+      <html>
+           <font color="#00bfff"><p/><p/><p/>
+   •　ダッシュボードのパフォーマンス、システム最適化の観点からポストプロセスサーチの使用は<font color="#ff1493"> 必須</font><p/>
+   •　ポストプロセスサーチはソースコードを操作して定義が必要 <p/>
+   •　ベースサーチにはトランスフォーミングコマンドを使用する(ストリーミングコマンドでは50万イベント以上は切り捨てられる) <p/>
+       </font>
+        <p/> <p/> <p/>
+      </html>
+        
+ 
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <html>
+ <p/> <p/> <p/>サーチ文:<p/>
+   index=tutorial action=purchase status=5*   <p/>
+          | bin _time span=1d <p/>
+          | table _time action categoryId status uri_path <p/>
+         <font color="#ff1493"> | top limit=5 action status uri_path (ポストプロセスサーチ) </font>
+        <p/> <p/> <p/>
+   
+
+      </html>
+      <table>
+        <title>Inernal Server Error - Top 5 (action/uri_path)</title>
+        <search base="server_error">
+          <query>| top limit=5 action status uri_path</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">true</option>
+        <option name="refresh.display">none</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <format type="color" field="count">
+          <colorPalette type="list">[#118832,#1182F3,#CBA700,#D94E17,#D41F1F]</colorPalette>
+          <scale type="threshold">0,30,70,100</scale>
+        </format>
+        <format type="number" field="count">
+          <option name="precision">0</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <html> <p/> <p/> <p/>サーチ文:<p/>
+           index=tutorial action=purchase status=5*   <p/>
+          | bin _time span=1d <p/>
+          | table _time action categoryId status uri_path <p/>
+         <font color="#ff1493"> | timechart count by uri_path (ポストプロセスサーチ) </font>
+        <p/> <p/> <p/>
+        
+ 
+      </html>
+      <chart>
+        <title>Inernal Server Error - 時系列(uri_path別)</title>
+        <search base="server_error">
+          <query>| timechart count by uri_path</query>
+        </search>
+        <option name="charting.axisY.scale">log</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <html>
+   <p/> <p/> <p/>サーチ文:<p/>
+   index=tutorial action=purchase status=5*   <p/>
+          | bin _time span=1d <p/>
+          | table _time action categoryId status uri_path <p/>
+         <font color="#ff1493"> | chart count by uri_path categoryId (ポストプロセスサーチ)</font>
+          <p/> <p/> <p/>
+      </html>
+      <chart>
+        <title>Inernal Server Error - 集計(商品/uri_path別)</title>
+        <search base="server_error">
+          <query>| chart count by uri_path categoryId</query>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

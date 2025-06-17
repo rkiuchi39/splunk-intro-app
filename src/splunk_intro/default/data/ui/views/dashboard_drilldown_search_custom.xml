@@ -1,0 +1,77 @@
+<form version="1.1" theme="dark">
+  <label>ドリルダウン: カスタムサーチ</label>
+  <fieldset submitButton="true" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@d</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="COUNTRY">
+      <label>国名(英語)</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+ドリルダウンからリンクするサーチをカスタムで指定することができます。カスタムサーチの中では以下のトークンを使うことができます。<br/>
+<ul>
+  <li>click.name: クリックした行の一番左のフィールド名 (本例では _time フィールド)</li>
+  <li>click.value: クリックした行の一番左のフィールド値 (本例では _time 値(エポック))</li>
+  <li>click.name2: クリックしたフィールド名(本例ではステータスコード)</li>
+  <li>click.value2: クリックしたフィールド値(本例では ステータスコードの件数)</li>
+</ul>
+[$ACTION$ 時エラー発生件数 - ステータスコード別] パネルの統計結果をクリックして、リンク先のサーチを確認してみてください。<br/>
+カスタムサーチの設定は各パネルの [その他のアクション]-&gt;[ドリルダウンの編集] メニューから行うことができます。
+        <br/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>アクション$ACTION$ 時のエラー発生件数 - ステータスコード別</title>
+      <table>
+        <title>国: $COUNTRY$</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN (4*, 5*)
+| bin _time span=1d | iplocation clientip
+| search Country IN $COUNTRY$ 
+| chart count by _time status</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>z<option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie%20action%20IN%20$ACTION$%20status%20IN%20(4*%2C%205*)%0A%7C%20bin%20_time%20span%3D1d%20%7C%20iplocation%20clientip%0A%7C%20search%20Country%20IN%20$COUNTRY$%20_time%3D$click.value$%20status%3D$click.name2$&amp;earliest=$PERIOD.earliest$&amp;latest=$PERIOD.latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

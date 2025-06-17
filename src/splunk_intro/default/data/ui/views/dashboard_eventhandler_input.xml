@@ -1,0 +1,100 @@
+<form version="1.1" theme="dark">
+  <label>イベントハンドラー: 入力フィールド</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="PERIOD">
+      <label>分析期間</label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>-d@d</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ACTION">
+      <label>アクション</label>
+      <fieldForLabel>action</fieldForLabel>
+      <fieldForValue>action</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by action</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="multiselect" token="STATUS">
+      <label>ステータスコード</label>
+      <fieldForLabel>status</fieldForLabel>
+      <fieldForValue>status</fieldForValue>
+      <search>
+        <query>index=tutorial sourcetype=access_combined_wcookie 
+| stats count by status</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <delimiter> ,</delimiter>
+    </input>
+    <input type="dropdown" token="FUNCTION" searchWhenChanged="true">
+      <label>分析対象</label>
+      <choice value="uri">URIパス</choice>
+      <choice value="referer_domain">リファラ</choice>
+      <choice value="method">メソッド</choice>
+      <choice value="useragent">ユーザエージェント</choice>
+      <change>
+        <condition label="URIパス">
+          <set token="FUNCTION_DESC">URIパス</set>
+          <set token="TIMECHART_FUNCTION">count by uri_path</set>
+        </condition>
+        <condition label="メソッド">
+          <set token="FUNCTION_DESC">メソッド</set>
+          <set token="TIMECHART_FUNCTION">count by method</set>
+        </condition>
+        <condition label="リファラ">
+          <set token="FUNCTION_DESC">リファラ</set>
+          <set token="TIMECHART_FUNCTION">count by referer_domain</set>
+        </condition>
+        <condition label="ユーザエージェント">
+          <set token="FUNCTION_DESC">ユーザエージェント</set>
+          <set token="TIMECHART_FUNCTION">count by useragent</set>
+        </condition>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+入力フィールドに対する変更を捕捉して、パネルに対して細かな制御を行うことができます。<br/>
+入力フィールドに対する変更を捕捉するには、以下のエレメントを使ってソースコードを編集します。<br/>
+<ul>
+  <li>change: 入力フィールドに対する変更を捕捉するイベントハンドラー</li>
+</ul>
+また、このダッシュボードではイベントハンドラーの実装に当たり以下のエレメントも使っています。<br/>
+<ul>
+  <li>condition label: 入力フィールドに設定されたラベルを判断</li>
+  <li>set: トークンへの値の設定</li>
+</ul>
+これらを用いることで、入力フィールドで選択した内容に応じて FUNCTION_DESC と TIMECHART_FUNCTION という 2 つのトークンに値が設定され、インタラクティブなサーチがパネルで実行されます。
+      </html>
+    </panel>
+  </row>
+  <row depends="$FUNCTION_DESC$">
+    <panel>
+      <title>分析: $FUNCTION_DESC$</title>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie action IN $ACTION$ status IN $STATUS$
+| timechart $TIMECHART_FUNCTION$</query>
+          <earliest>$PERIOD.earliest$</earliest>
+          <latest>$PERIOD.latest$</latest>
+        </search>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

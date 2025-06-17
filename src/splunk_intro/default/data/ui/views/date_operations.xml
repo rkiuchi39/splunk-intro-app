@@ -1,0 +1,77 @@
+<form version="1.1" theme="dark">
+  <label>日付の操作</label>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <title>_time フィールドの値変換</title>
+      <input type="radio" token="TIME_OPERATION">
+        <label>_time 操作</label>
+        <choice value="">なし</choice>
+        <choice value="| eval _time = strftime(_time, &quot;%Y/%m/%d %H:%M:%S.%3N&quot;)">あり</choice>
+        <default></default>
+      </input>
+      <html>
+        <p> index=tutorial sourcetype=access_combined_wcookie </p>
+        <p> | timechart sum(bytes) span=1d by uri_path </p>
+        <p>
+          <font color="#ff6347">$TIME_OPERATION$ </font>
+        </p>
+        <p> | rename _time as 時間</p>
+                  <a href="https://docs.splunk.com/Documentation/SCS/current/SearchReference/DateandTimeFunctions" target="_blank">参考ドキュメント(日時の関数)</a>
+        <p>
+        _time にはエポック形式でデータが格納されています。Splunk は表形式でデータを表示する際、_time フィールド名に対しては自動的に可読可能な時間形式に変換しますが、フィールド名を _time 以外に変更した場合には strftime 関数を使って明示的に表示形式を変更する必要があります。</p>
+
+      </html>
+      <table>
+        <title>URIパス毎の転送バイト数 (5日分)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| timechart sum(bytes) span=1d by uri_path
+$TIME_OPERATION$
+| rename _time as 時間
+</query>
+          <earliest>-7d@d</earliest>
+          <latest>-2d@d</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="number" field="avg(traffic1): Bundle-Ether1611">
+          <option name="precision">1</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="color" field="avg(traffic1): Bundle-Ether1611">
+          <colorPalette type="minMidMax" maxColor="#118832" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="color" field="avg(traffic1): Bundle-Ether1613">
+          <colorPalette type="minMidMax" maxColor="#118832" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="avg(traffic1): Bundle-Ether1613">
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Bundle-Ether1611">
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Bundle-Ether1613">
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Bundle-Ether1615">
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Bundle-Ether1617">
+          <option name="useThousandSeparators">false</option>
+        </format>
+        <format type="number" field="Bundle-Ether1619">
+          <option name="useThousandSeparators">false</option>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

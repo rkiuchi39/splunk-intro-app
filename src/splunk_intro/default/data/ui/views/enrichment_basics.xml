@@ -1,0 +1,93 @@
+<dashboard version="1.1" theme="dark">
+  <label>エンリッチメントの基本</label>
+  <row>
+    <panel>
+      <title>Status Code のルックアップの中身</title>
+      <html>
+        <font color="#ff6347"> | inputlookup http-status-codes.csv</font>
+      </html>
+      <table>
+        <search>
+          <query>| inputlookup http-status-codes.csv
+| table Value Description Reference</query>
+          <earliest>-4h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>ルックアップ未使用時</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie </p>
+        <p>| iplocation clientip</p>
+      <p>| stats count by Country status </p>
+      <br/> <br/> 
+      </html>
+      <chart>
+        <title>国別ステータスコード (過去7日間)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| stats count by Country status</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">collapsed</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">Country</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>ルックアップ使用時</title>
+      <html>
+        <p>index=tutorial sourcetype=access_combined_wcookie </p>
+        <p>| iplocation clientip</p>
+        <p>| <font color="#ff6347"> lookup http-status-codes.csv Value as status output Description as Description</font>
+        </p>
+      <p>| eval status_description = status." - ".Description </p>
+      <p>| stats count by Country status_description </p>
+      </html>
+      <chart>
+        <title>国別ステータスコード (過去7日間)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| iplocation clientip
+| lookup http-status-codes.csv Value as status output Description as Description
+| eval status_description = status." - ".Description 
+| stats count by Country status_description</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">collapsed</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trellis.splitBy">Country</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

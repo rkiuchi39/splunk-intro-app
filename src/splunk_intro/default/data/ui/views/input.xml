@@ -1,0 +1,246 @@
+<form version="1.1" theme="dark">
+  <label>入力の移行 (Classic)</label>
+  <description>クラシックダッシュボードで使用可能な６つの入力 (入力するとパネルが表示されます)</description>
+  <fieldset autoRun="true" submitButton="false">
+    <input type="time" token="Period" searchWhenChanged="true">
+      <label>タイムピッカー</label>
+      <default>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="number" searchWhenChanged="true">
+      <label>テキスト(数字):</label>
+      <default>5</default>
+      <initialValue>5</initialValue>
+    </input>
+    <input type="dropdown" token="Country">
+      <label>ドロップダウン</label>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>Country</fieldForValue>
+      <search>
+        <query>index=tutorial status=5*
+| iplocation clientip
+| stats count by Country</query>
+        <earliest>-7d@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="radio" token="Method" searchWhenChanged="true">
+      <label>ラジオボタン</label>
+      <choice value="get">GET</choice>
+      <choice value="post">POST</choice>
+    </input>
+    <input type="multiselect" token="Wday" searchWhenChanged="true">
+      <label>複数選択</label>
+      <choice value="monday">月曜日</choice>
+      <choice value="tuesday">火曜日</choice>
+      <choice value="wednesday">水曜日</choice>
+      <choice value="thursday">木曜日</choice>
+      <choice value="friday">金曜日</choice>
+      <choice value="saturday">土曜日</choice>
+      <choice value="sunday">日曜日</choice>
+      <delimiter>, </delimiter>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+    </input>
+    <input type="link" token="Referer">
+      <label>リンクリスト</label>
+      <prefix>"</prefix>
+      <suffix>"</suffix>
+      <choice value="http://www.bing.com">bing.com</choice>
+      <choice value="http://www.yahoo.com">yahoo.com</choice>
+      <choice value="http://www.google.com">google.com</choice>
+      <choice value="http://www.buttercupgames.com">buttercupgames.com</choice>
+    </input>
+    <input type="link" token="unused">
+      <label>リンクスイッチ(可視化の選択)</label>
+      <choice value="table">Table</choice>
+      <choice value="chart">Chart</choice>
+      <choice value="map">Map</choice>
+      <change>
+        <condition value="table">
+          <set token="showTable">true</set>
+          <unset token="showChart"></unset>
+          <unset token="showMap"></unset>
+        </condition>
+        <condition value="chart">
+          <set token="showChart">true</set>
+          <unset token="showTable"></unset>
+          <unset token="showMap"></unset>
+        </condition>
+        <condition value="map">
+          <set token="showMap">true</set>
+          <unset token="showChart"></unset>
+          <unset token="showTable"></unset>
+        </condition>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <html>
+        <p/>
+        <p/>
+<font color="##00bfff">
+          <b>•　入力(Inputs) の大半はDashboard Studio にすべて移行される。<p/>
+•　一部の入力方式(Checkboc、Linklist)はドロップダウンにマージされる。<p/>
+•　Condition Token を使った入力は機能が無視されたまま移行される。<p/>
+•　パネル内に設置した入力は入力パネルそのものが移行されな。</b>
+        </font>
+        <p/> <p/> <p/>
+        <p/>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>リンクリスト(可視化のスイッチ)</title>
+      <table depends="$showTable$">
+        <title>Table</title>
+        <search>
+          <query>index=tutorial action=purchase
+                    | iplocation clientip
+                    | stats count by Country</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </table>
+      <chart depends="$showChart$">
+        <title>Chart</title>
+        <search>
+          <query>index=tutorial action=purchase
+                    | iplocation clientip
+                    | stats count by Country</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+      <map depends="$showMap$">
+        <title>Map</title>
+        <search>
+          <query>index=tutorial action=purchase
+                    | iplocation clientip
+                    | geostats latfield=lat longfield=lon count</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="height">366</option>
+        <option name="mapping.map.center">(30.810646,-10.556976)</option>
+        <option name="mapping.map.zoom">2</option>
+      </map>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$Referer$">
+      <title>リンクリスト</title>
+      <chart>
+        <title>国別リファラ集計</title>
+        <search>
+          <query>index=tutorial referer_domain=$Referer$
+| iplocation clientip
+| stats count  by Country</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel depends="$Wday$">
+      <title>マルチセレクト</title>
+      <table>
+        <title>曜日別ユーザ行動</title>
+        <search>
+          <query>index=tutorial  date_wday IN $Wday$ 
+| chart count  by action date_wday</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+      </table>
+    </panel>
+    <panel depends="$Method$">&gt;<title>ラジオボタン</title>
+      <chart>
+        <title>Internal Server Error  - メソッド毎集計: $Method$</title>
+        <search>
+          <query>index=tutorial status=5* method=$Method$
+| stats count by status</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel depends="$Country$">
+      <title>ドロップダウン</title>
+      <chart>
+        <title>Internal Server Error  - アクセス元: $Country$</title>
+        <search>
+          <query>index=tutorial status=5* 
+| iplocation clientip
+| search Country=$Country$
+| timechart count by Country</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel depends="$number$">
+      <title>テキスト入力</title>
+      <table>
+        <title>Internal Server Error  - Top $number$ IPアドレス</title>
+        <search>
+          <query>index=tutorial status=5*
+| iplocation clientip
+| top limit=$number$  clientip Country
+| eval percent = round(percent,2)</query>
+          <earliest>$Period.earliest$</earliest>
+          <latest>$Period.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+      </table>
+    </panel>
+    <panel depends="$number$">
+      <title>パネル内入力</title>
+      <input type="time" token="Period2">
+        <label></label>
+        <default>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <chart>
+        <title>Internal Server Error  - 国別分布</title>
+        <search>
+          <query>index=tutorial status=5*
+| iplocation clientip
+| stats count by Country</query>
+          <earliest>$Period2.earliest$</earliest>
+          <latest>$Period2.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,136 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) SPL  - Search Processing Language とは</label>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>SPL</b>
+            </font>
+          </font> <p/>
+        SPL は Search Processing Language の略称です。 SPL は、Splunk ソフトウェアで使用するために Splunk によって設計されています。<p/>
+        SPL には、すべての検索コマンドとその関数、引数、句が含まれます。 <p/>
+        SPL を使ってデータの検索やフィルタリング、加工、修正や集計処理を行うことができます。<p/>
+          <br/>
+         <font color="#1e90ff">
+           <font size="5"> <b>基本構造</b>
+            </font>
+          </font>
+          <p/>
+        
+        SPL では初めに条件を指定してイベントを絞り込み、以降はパイプ | で区切りながらコマンドを使って処理を記述していきます。<p/>
+        このアプリではまずイベントの絞り込み⽅を紹介した後、最もよく使われるコマンドを学習して初歩的なサーチをかけるようになることを⽬的にしています。<p/>
+        はじめて学習する方は、<font color="#ff1493 ">
+            <b>常に基本構造のどの部分をテーマにしたものかを意識しておくと、理解がしやすくなります。</b> </font>
+         <br/>
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>1行目</td>
+              <td>絞り込み</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie</td>
+</tr>
+
+
+<tr bgcolor="blue">
+                <td>2行目</td>
+              <td>加工</td>
+              <td>| eval kbytes = round(bytes/1024,2)</td>
+</tr>
+
+
+<tr bgcolor="#ff8c00 ">
+                  <td>3行目</td>
+              <td>集計</td>
+              <td>| chart sum(kbytes) by uri_path action </td>
+</tr>
+
+<tr bgcolor="deeppink">
+                  <td>4行目</td>
+              <td>整形</td>
+              <td>| rename "sum(kbytes)" as "合計転送量(KB)" uri_path as "URIパス" action as "カートアクション"</td>
+</tr>
+
+</table>
+          <br/>
+        
+        このサーチ文を実際に実行してみましょう。
+
+　
+</font>
+        
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+       <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ実行結果</b>
+            </font>
+          </font>  <br/>
+        上記 SPL ではすでに集計まで実行しているので、右パネルのように集計結果がテーブルで表記できるようになっています。つまり対象データを絞り込んで、検索結果を加工・集計処理まで行えば、すぐに結果をダッシュボードを使って可視化することができます。サーチバーを使った実際のサーチ結果を見る場合はパネル右下の虫眼鏡マークをクリックしてください。<br/>
+         <font color="#1e90ff">
+           <font size="5"> <b>集計前の結果</b>
+            </font>
+          </font>
+          <br/>
+        下のパネルを見てください。これは集計処理前の結果を出力させたものです。
+        Splunk に保管されているイベントデータが、1行目の絞り込み検索の結果に応じて返ってきた結果になります。
+        一番左の列は実際の生データ、右側の「_time」から「splunk_server」の各列は個々のイベントが Splunk に取り込まれた際に付与されたメタデータです。
+        Splunk の絞り込みサーチでは、対象のイベントデータに含まれる単語、メタデータのほか、イベントから抽出したフィールド値を用いて、調査や分析、集計で使用するデータを絞り込みます。 <br/>
+<font color="#ff1493 ">
+            <b>パネル右下の虫眼鏡アイコンをクリックして、実際のサーチの動きを確認してください。</b> </font>
+
+</font>
+        
+      </html>
+    </panel>
+    <panel>
+      <title>サーチの実行結果 (テーブル表記)</title>
+      <table>
+        <title>URIパスごとの合計転送量 (カートアクション別)</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie 
+| eval kbytes = round(bytes/1024,2) 
+| chart sum(kbytes) by uri_path action
+| rename "sum(kbytes)" as "合計転送量(KB)" uri_path as "URIパス" action as "カートアクション"</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="wrap">false</option>
+        <format type="color" field="addtocart">
+          <colorPalette type="map"></colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>サーチの実行結果 (集計処理前)</title>
+      <table>
+        <title>index=tutorial sourcetype=access_combined_wcookie  の実行結果</title>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <format type="number" field="_raw">
+          <option name="precision">0</option>
+        </format>
+        <format type="color" field="_raw">
+          <colorPalette type="map"></colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+</dashboard>

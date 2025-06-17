@@ -1,0 +1,16 @@
+
+    <panel>
+      <title>アクション毎のバイト数(過去7日)</title>
+      <chart>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie
+| stats avg(bytes) as "avgbytes" sum(bytes) as totalbytes by action
+| eval avgbytes=round(avgbytes,2), totalbytes=round(totalbytes,2)</query>
+          <earliest>-7d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>

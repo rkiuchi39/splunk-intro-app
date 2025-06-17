@@ -1,0 +1,303 @@
+<dashboard version="1.1" theme="dark">
+  <label>(説明) キーワードサーチ</label>
+  <row>
+    <panel>
+      <title></title>
+      <html>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>サーチ文に検索したいキーワードを入れるだけ</b>   
+            </font>
+          </font>  <br/>
+データの中から、ある特定のキーワードを含むイベントを抽出したい場合は、サーチ文にそのキーワードを入力すれば抽出されます。たとえば Mozzila というキーワードを含むイベントを抽出するには、以下のようなサーチ文をサーチバーに入力して実行してみてください。<p/>
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie  <font color="yellow">Mozilla</font>
+              </td>
+</tr>
+</table>    <br/>
+  
+   </font>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+       <font size="4">
+     <font color="#1e90ff"> <br/>
+           <font size="5"> <b>サーチ実行結果</b>
+            </font>
+          </font>  <br/>
+右のパネルに実行結果の生データで Mozilla がフォーカスされています。(分かりにくいのでパネル右下の虫眼鏡アイコンをクリックして、実際のサーチ画面からも結果を確認してみてださい)<br/>
+
+• Splunk では高速検索を実現するために、ログデータが Index に書き込まれるときに、単語単位でレキシコン(目録)が生成されています。逆に単語で区切られていない文字列を、そのまま検索することができません。<p/>
+• レキシコンの単位となる単語(トークン)となる区切り文字(メジャーブレーカー)には以下のようなものがあります。    <br/>
+
+<table border="1" bordercolor="#f0f8ff ">
+      <tr>
+        <td bgcolor="#483d8b ">　区切り文字</td>
+        <td bgcolor="#483d8b ">　スペース、改行、タブ、[　](ブラケット)、!(エクスクラメーション)、？(クエスチョン)、;(セミコロン)、,(カンマ)、'"(引用符)、＆(アンド)</td>
+     </tr>
+    </table>    <br/>
+
+• そのため、たとえば <font color="#ff0000"> Mozill </font>でサーチを実行しても Mozilla を含むイベントは返ってきません。<p/>
+• 一方、単語で大文字小文字は区別しないので、<font color="#ff0000"> mozilla </font>でサーチを実行すると、イベントは返ってきます。<p/>
+<font color="#ff1493 ">
+            <b>Spunk のキーワードは単語 (トークン) 単位で指定しなければなりません。</b> </font>
+            
+ 
+</font>
+      </html>
+    </panel>
+    <panel>
+      <title>キーワードサーチの実行結果 (イベント表記)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie Mozilla</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>大文字小文字を区別して検索したい場合</b>   
+            </font>
+          </font>  <br/>
+キーワード検索でサーチ対象の単語の⼤⽂字⼩⽂字を区別して検索したい場合は CASE を使います。<p/>
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="yellow">CASE(Mozilla)</font>
+              </td>
+</tr>
+</table>
+          <br/>
+• たとえばCASE(mozilla)で検索をかけると、m が小文字の mozilla という単語を含むイベントはないため、検索結果はえられません。<p/>
+   </font>
+      </html>
+    </panel>
+    <panel>
+      <title>CASEを用いたキーワードサーチの実行結果 (イベント表記)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie CASE(Mozilla)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>ワイルドカード(*)検索</b>   
+            </font>
+          </font>  <br/>
+トークンの一部を指定する場合には、ワイルドカードを指定します。<p/>
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="yellow">Mozill*</font>
+              </td>
+</tr>
+</table>
+    <br/>
+• ワイルドカード検索を使用しなくても済む場面では、<font color="#ff1493 ">極力使用しない</font>ようにしてください。たとえば...<p/>
+- *error よりも fatal_error とする<p/>
+- status=5* よりも status=500 OR status=503 とする<br/>
+• ワイルドカードの使用はサーチのパフォーマンスの低下を招きます。特に検索対象の単語の冒頭でワイルドカードに使用して検索をかけると、Splunkはマッチする単語を特定するためにすべてのバケットのレキシコンからすべてのキーワードをスキャンするため、サーチの速度がかなり遅くなります。<p/>
+   </font>
+      </html>
+    </panel>
+    <panel>
+      <title>キーワードサーチの実行結果 (ワイルドカード検索)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie Mozill*</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>OR 検索</b>   
+            </font>
+          </font>  <br/>
+複数の単語の何れかに合致するイベントを検索する場合には、検索する単語間に<font color="#ff1493 ">
+            <b>OR を挿入</b> </font>します。<p/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie ACCESSORIES <font color="#ff0000"> OR </font> SPORTS　
+              </td>
+</tr>
+</table>
+ <br/>
+   </font>
+      </html>
+    </panel>
+    <panel>
+      <title>キーワードサーチの実行結果 (OR検索)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie ACCESSORIES OR SPORTS</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>NOT 検索</b>   
+            </font>
+          </font>  <br/>
+OR 検索の 「AまたはB」 という検索に対して、「AでもBでもない」という条件でサーチを実行するためには、NOT を使用します。<p/>
+NOT を指定することでその後に続く条件を反転させることができます。<br/>
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="#ff0000"> NOT </font>　ACCESSORIES<font color="#ff0000"> OR NOT</font>SPORTS</td>
+</tr>
+
+<tr bgcolor="green">
+                  <td>サーチ文</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="#ff0000"> NOT </font>(ACCESSORIES<font color="#ff0000"> OR </font>SPORTS)</td>
+</tr>
+
+</table>
+          <br/>
+
+このサーチでは、購入(purchase)アクションを実行したときのレスポンスコードが200であるイベントの絞り込みを意図したものですが、キーワード検索の場合は、そのようなイベントが抽出されているかどうかは保証されません。あくまで purchase と 200 という２つの単語が含まれているイベントを検索していることに留意してください。<br/>
+
+今回使用している Apacheフォーマットのアクセスログで、カートアクションが purchase であり、かつレスポンスコードが200であるという意味を含んだイベントを検索するには、この後に出てくるフィールド検索を使用します。<br/>
+
+ <br/>
+   </font>
+      </html>
+    </panel>
+    <panel>
+      <title>キーワードサーチの実行結果 (NOT検索)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie NOT (purchase OR 200)</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title></title>
+      <html> <br/>
+          <font size="4">
+       <font color="#1e90ff">
+           <font size="5"> <b>AND 検索</b>   
+            </font>
+          </font>  <br/>
+複数の単語の両方を含むイベントを検索する場合には、そのまま単語を連ねて検索します。単語の間に<font color="#ff0000"> AND </font>を挿入しても同じです。 <p/>
+
+
+<table border="1" width="1000" bgcolor="orange" cellpadding="5">
+
+<tr bgcolor="green">
+              <td>サーチ文</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="#ff0000"> purchase 200  </font> </td>
+</tr>
+
+
+<tr bgcolor="green">
+                <td>サーチ文</td>
+              <td>index=tutorial sourcetype=access_combined_wcookie <font color="#ff0000"> purchase AND 200</font>
+              </td>
+</tr>
+
+</table>
+          <br/>
+
+このサーチでは、購入(purchase)アクションを実行したときのレスポンスコードが200であるイベントの絞り込みを意図したものですが、キーワード検索の場合は、そのようなイベントが抽出されているかどうかは保証されません。あくまで purchase と 200 という２つの単語が含まれているイベントを検索していることに留意してください。<br/>
+
+今回使用している Apacheフォーマットのアクセスログで、カートアクションが purchase であり、かつレスポンスコードが200であるという意味を含んだイベントを検索するには、この後に出てくるフィールド検索を使用します。<br/>
+
+ <br/>
+   </font>
+      </html>
+    </panel>
+    <panel>
+      <title>キーワードサーチの実行結果 (AND検索)</title>
+      <event>
+        <search>
+          <query>index=tutorial sourcetype=access_combined_wcookie purchase 200</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="count">5</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">search?q=index%3Dtutorial%20sourcetype%3Daccess_combined_wcookie&amp;earliest=-7d@h&amp;latest=now</link>
+        </drilldown>
+      </event>
+    </panel>
+  </row>
+</dashboard>
